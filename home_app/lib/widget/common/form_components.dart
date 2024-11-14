@@ -14,15 +14,17 @@ class FormComponents {
       controller: controller,
       readOnly: isReadOnly,
       decoration: InputDecoration(
-        hintText: hintText,
+        labelText: hintText,
+        labelStyle: theme.typography.headlineSmall
+            .copyWith(fontWeight: FontWeight.normal),
         prefixIcon: Icon(
           Icons.search,
           color: theme.primary,
         ),
         filled: true,
-        fillColor: theme.secondary,
+        fillColor: theme.primary.withOpacity(0.06),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(50.0),
           borderSide: BorderSide.none,
         ),
       ),

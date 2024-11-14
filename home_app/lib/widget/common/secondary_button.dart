@@ -14,17 +14,16 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // AppTheme theme = AppTheme.of(context);
+    AppTheme theme = AppTheme.of(context);
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        height: 45.0,
-        // width: MediaQuery.of(context).size.width * 0.5,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-            // border: Border.all(color: theme.primary, width: 1),
-            color: color,
+            border: Border.all(color: theme.primary, width: 1),
+            color: color!.withOpacity(0.06),
             borderRadius: BorderRadius.circular(10)),
-        child: child,
+        child: Center(child: child),
       ),
     );
   }

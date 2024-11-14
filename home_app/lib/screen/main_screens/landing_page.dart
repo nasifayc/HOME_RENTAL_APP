@@ -8,8 +8,8 @@ import 'package:home_app/screen/main_screens/post_screen.dart';
 import 'package:home_app/widget/landing/left_nav_bar.dart';
 
 class LandingPage extends StatelessWidget {
-  const LandingPage({super.key});
-
+  LandingPage({super.key});
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     AppTheme appTheme = AppTheme.of(context);
@@ -21,7 +21,7 @@ class LandingPage extends StatelessWidget {
             case BottomNavState.home:
               return 'Home';
             case BottomNavState.post:
-              return 'Cost';
+              return 'Post';
             case BottomNavState.chat:
               return 'Chat';
             default:
@@ -43,17 +43,33 @@ class LandingPage extends StatelessWidget {
         }
 
         return Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             elevation: 1,
+            leading: GestureDetector(
+              onTap: () {
+                _scaffoldKey.currentState?.openDrawer();
+              },
+              child: Icon(
+                Icons.widgets_outlined,
+                color: appTheme.primary,
+              ),
+            ),
             title: Text(
               getTitle(state),
               style: appTheme.typography.headlineSmall,
             ),
             centerTitle: true,
             actions: [
-              Icon(
-                Icons.search,
-                color: appTheme.primary,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: appTheme.primary.withOpacity(0.1),
+                  child: Icon(
+                    Icons.notifications_none_sharp,
+                    color: appTheme.primary,
+                  ),
+                ),
               )
             ],
           ),

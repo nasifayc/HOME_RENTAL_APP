@@ -72,13 +72,15 @@ class _OnboardingState extends State<Onboarding> {
                 return Padding(
                   padding: const EdgeInsets.all(40),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        onboardingData[i]["image"]!,
-                        height: 200,
-                        width: 200,
+                      Center(
+                        child: Image.asset(
+                          onboardingData[i]["image"]!,
+                          height: 200,
+                          width: 200,
+                        ),
                       ),
                       const SizedBox(height: 30),
                       Text(

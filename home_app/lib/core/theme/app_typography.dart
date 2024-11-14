@@ -56,14 +56,14 @@ class ThemeTypography extends AppTypography {
         fontFamily: fontFamily,
         color: theme.primary,
         fontWeight: FontWeight.bold,
-        fontSize: 32,
+        fontSize: 28,
       );
   @override
   TextStyle get headlineMedium => TextStyle(
         fontFamily: fontFamily,
         color: theme.primary,
         fontWeight: FontWeight.bold,
-        fontSize: 26,
+        fontSize: 24,
       );
 
   @override
@@ -71,22 +71,22 @@ class ThemeTypography extends AppTypography {
         fontFamily: fontFamily,
         color: theme.primary,
         fontWeight: FontWeight.bold,
-        fontSize: 16,
+        fontSize: 18,
       );
 
   @override
   TextStyle get titleLarge => TextStyle(
       fontFamily: fontFamily,
       color: theme.primaryText,
-      fontWeight: FontWeight.normal,
-      fontSize: 22,
+      fontWeight: FontWeight.bold,
+      fontSize: 24,
       overflow: TextOverflow.ellipsis);
 
   @override
   TextStyle get titleMedium => TextStyle(
       fontFamily: fontFamily,
       color: theme.primaryText,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.bold,
       fontSize: 18,
       overflow: TextOverflow.ellipsis);
 
@@ -94,7 +94,7 @@ class ThemeTypography extends AppTypography {
   TextStyle get titleSmall => TextStyle(
       fontFamily: fontFamily,
       color: theme.tertiary,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.bold,
       fontSize: 16,
       overflow: TextOverflow.ellipsis);
 

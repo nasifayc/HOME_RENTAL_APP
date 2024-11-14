@@ -167,7 +167,7 @@ class PinForm extends StatelessWidget {
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const LandingPage()), // Your main screen widget
+                                  LandingPage()), // Your main screen widget
                           (route) => false,
                         );
                       },
