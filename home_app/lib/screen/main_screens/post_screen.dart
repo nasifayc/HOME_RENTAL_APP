@@ -195,7 +195,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                 ListTile(
                   title: const Text("For Rent"),
                   trailing: Switch(
-                    trackColor: const WidgetStatePropertyAll(Colors.blueAccent),
+                    trackColor: const WidgetStatePropertyAll(Colors.black),
                     thumbColor: const WidgetStatePropertyAll(Colors.white),
                     value: _forRent,
                     onChanged: (value) {
@@ -283,9 +283,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      print("checking validity");
                       if (_formKey.currentState!.validate()) {
-                        print("valid");
                         houseCubit.addHouse(
                             _titleController.text,
                             _locationController.text,
@@ -301,7 +299,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 29, 76, 157),
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),

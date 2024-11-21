@@ -8,6 +8,7 @@ class HelpAndSupport extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 1,
         title: const Text(
           "Help & Support",
           style: TextStyle(fontWeight: FontWeight.bold),

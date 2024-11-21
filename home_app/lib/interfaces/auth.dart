@@ -7,4 +7,6 @@ abstract class IAuthRepository {
       String name, String phoneNumber, String password, String role);
   Future<Either<AuthError?, AuthToken?>> login(
       String phoneNumber, String password);
+  Future<Either<AuthError?, String?>> changePassword(
+      String oldPassword, String newPassword);
 }
