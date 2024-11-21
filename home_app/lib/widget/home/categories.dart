@@ -28,7 +28,7 @@ class Categories extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: SecondaryButton(
                 onPressed: null,
-                color: Theme.of(context).primaryColor,
+                color: theme.primary,
                 child: Text(
                   categories[index],
                   style: theme.typography.labelMedium.copyWith(

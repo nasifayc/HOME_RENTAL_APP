@@ -20,8 +20,8 @@ class SecondaryButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
-            border: Border.all(color: theme.primary, width: 1),
-            color: color!.withOpacity(0.06),
+            border: Border.all(color: theme.secondary, width: 1),
+            color: color!.withOpacity(0.2),
             borderRadius: BorderRadius.circular(10)),
         child: Center(child: child),
       ),
