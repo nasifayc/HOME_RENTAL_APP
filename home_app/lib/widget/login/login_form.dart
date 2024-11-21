@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart';
-import 'package:home_app/screen/main_screens/home_screen.dart';
+import 'package:home_app/screen/main_screens/landing_page.dart';
 import 'package:home_app/states/auth_state.dart';
 import 'package:home_app/widget/common/form_components.dart';
 import 'package:home_app/widget/common/google_auth_button.dart';
@@ -32,7 +32,7 @@ class _LoginFormState extends State<LoginForm> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
+                builder: (context) => LandingPage(),
               ));
         }
       },

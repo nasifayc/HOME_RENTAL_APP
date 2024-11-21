@@ -35,7 +35,9 @@ class HomeCard extends StatelessWidget {
                 topRight: Radius.circular(10),
               ),
               image: DecorationImage(
-                image: AssetImage(house.mainImage),
+                image: NetworkImage(
+                    "http://192.168.46.41:3000/${house.mainImage}",
+                    scale: 1),
                 fit: BoxFit.cover,
               ),
             ),
