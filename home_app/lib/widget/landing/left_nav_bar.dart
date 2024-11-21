@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/theme/app_theme.dart';
+import 'package:home_app/cubits/auth.dart';
+import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/onboarding.dart';
+import 'package:home_app/widget/login/login_form.dart';
 
 class LeftNavBar extends StatelessWidget {
   const LeftNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
     AppTheme theme = AppTheme.of(context);
     return Drawer(
       child: ListView(
@@ -142,10 +147,11 @@ class LeftNavBar extends StatelessWidget {
               style: theme.typography.bodySmall,
             ),
             onTap: () {
+              authCubit.logout();
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
                     builder: (context) =>
-                        const Onboarding()), // Your main screen widget
+                        const LoginPage()), // Your main screen widget
                 (route) => false,
               );
             },

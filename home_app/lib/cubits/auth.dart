@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/interfaces/auth.dart';
 import 'package:home_app/states/auth_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final IAuthRepository authRepo;
@@ -35,5 +36,12 @@ class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       emit(AuthError("", "", "", "An error occurred: $e", ''));
     }
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("accessToken");
+    await prefs.remove("refreshToken");
+    emit(UnAuthenticated());
   }
 }
