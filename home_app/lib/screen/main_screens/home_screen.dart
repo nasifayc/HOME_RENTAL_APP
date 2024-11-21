@@ -25,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
     'Townhouses',
     'Penthouses',
     'Duplexes',
-    
   ];
 
   @override
@@ -147,7 +146,7 @@ class CategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 30,
+      height: 32,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: List<Widget>.generate(categories.length, (int index) {

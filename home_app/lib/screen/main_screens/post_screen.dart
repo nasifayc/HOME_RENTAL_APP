@@ -40,16 +40,15 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   Future<void> _pickSubImages() async {
     final picker = ImagePicker();
     final images = await picker.pickMultiImage();
-    if (images != null) {
-      setState(() {
-        _subImages.addAll(images);
-      });
-    }
+
+    setState(() {
+      _subImages.addAll(images);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final houseCubit = BlocProvider.of<HouseCubit>(context);
+    final _ = BlocProvider.of<HouseCubit>(context);
     final categories = [
       'Apartments',
       'Villas',
