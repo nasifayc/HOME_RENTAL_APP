@@ -23,7 +23,7 @@ class HouseDetailScreen extends StatelessWidget {
         children: [
           // Main image at the top
           Image.network(
-            "http://10.5.193.51:3000/${house.mainImage}",
+            "http://192.168.158.41:3000/${house.mainImage}",
             height: 250,
             width: double.infinity,
             fit: BoxFit.cover,

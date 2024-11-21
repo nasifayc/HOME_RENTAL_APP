@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:home_app/interfaces/house.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/states/house_state.dart';
@@ -51,40 +50,56 @@ class HouseRepository implements IHouseRepository {
       bool forRent,
       XFile mainImage,
       List<XFile> subImages) async {
-    final Dio _dio = Dio();
+    try {
+      var uri = Uri.parse("$baserURL/houses");
 
-    FormData formData = FormData.fromMap({
-      "title": title,
-      "location": location,
-      "description": description,
-      "price": price,
-      "category": category,
-      "number_of_bedrooms": bedrooms,
-      "number_of_bathrooms": bathrooms,
-      "number_of_floors": floors,
-      "for_Rent": forRent ? "true" : "false",
-      "main_image": await MultipartFile.fromFile(mainImage.path,
-          filename: mainImage.path.split('/').last),
-      "sub_images": await Future.wait(subImages.map((image) async {
-        return MultipartFile.fromFile(image.path,
-            filename: image.path.split('/').last);
-      })),
-    });
+      // Create the multipart request
+      var request = http.MultipartRequest('POST', uri);
 
-    final prefs = await SharedPreferences.getInstance();
-    final _ = prefs.getString("refreshToken") ?? '';
-    final accessToken = prefs.getString("accessToken") ?? '';
+      // Add the file to the request
+      var file = await http.MultipartFile.fromPath(
+        'main_image',
+        mainImage.path,
+      );
 
-    Response response = await _dio.post(
-      "$baserURL/houses",
-      data: formData,
-      options: Options(headers: {
-        "Authorization": "Bearer $accessToken",
-        "Content-Type": "multipart/form-data",
-      }),
-    );
+      // Add additional form fields
+      request.fields['title'] = title;
+      request.fields['location'] = location;
+      request.fields["description"] = description;
+      request.fields["price"] = price.toString();
+      request.fields["category"] = category;
+      request.fields["number_of_bedrooms"] = bedrooms.toString();
+      request.fields["number_of_bathrooms"] = bathrooms.toString();
+      request.fields["number_of_floors"] = floors.toString();
+      request.fields["for_Rent"] = forRent ? "true" : "false";
 
-    print(response.data);
+      // Add the file to the request
+      request.files.add(file);
+
+      // Get access token from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString("accessToken");
+
+      // Ensure the access token is not null
+      if (accessToken != null && accessToken.isNotEmpty) {
+        // Add authorization header with the access token
+        request.headers['Authorization'] = 'Bearer $accessToken';
+      } else {
+        print('Access token is missing or invalid.');
+      }
+
+      // Send the request
+      var response = await request.send();
+
+      // Handle response
+      if (response.statusCode == 200) {
+        print('Upload successful');
+      } else {
+        print('Upload failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+    }
 
     return Right(HouseError(''));
   }

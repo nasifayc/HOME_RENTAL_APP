@@ -30,11 +30,10 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   Future<void> _pickMainImage() async {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _mainImage = image;
-      });
-    }
+
+    setState(() {
+      _mainImage = image;
+    });
   }
 
   Future<void> _pickSubImages() async {
@@ -58,6 +57,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
       'Duplexes',
       'Others'
     ];
+    final houseCubit = BlocProvider.of<HouseCubit>(context);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -283,19 +283,21 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
+                      print("checking validity");
                       if (_formKey.currentState!.validate()) {
-                        // houseCubit.addHouse(
-                        //     _titleController.text,
-                        //     _locationController.text,
-                        //     _descriptionController.text,
-                        //     num.parse(_priceController.text),
-                        //     _selectedCategory!,
-                        //     _bedrooms,
-                        //     _bathrooms,
-                        //     _floors,
-                        //     _forRent,
-                        //     _mainImage!,
-                        //     _subImages.map((image) => image).toList());
+                        print("valid");
+                        houseCubit.addHouse(
+                            _titleController.text,
+                            _locationController.text,
+                            _descriptionController.text,
+                            num.parse(_priceController.text),
+                            _selectedCategory!,
+                            _bedrooms,
+                            _bathrooms,
+                            _floors,
+                            _forRent,
+                            _mainImage!,
+                            _subImages.map((image) => image).toList());
                       }
                     },
                     style: ElevatedButton.styleFrom(

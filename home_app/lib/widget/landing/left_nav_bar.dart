@@ -3,11 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
-import 'package:home_app/screen/onboarding.dart';
-import 'package:home_app/widget/login/login_form.dart';
 
-class LeftNavBar extends StatelessWidget {
+class LeftNavBar extends StatefulWidget {
   const LeftNavBar({super.key});
+
+  @override
+  State<LeftNavBar> createState() => _LeftNavBarState();
+}
+
+class _LeftNavBarState extends State<LeftNavBar> {
+  bool isLightTheme = true;
 
   @override
   Widget build(BuildContext context) {
@@ -35,82 +40,23 @@ class LeftNavBar extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(
-              Icons.category,
-              color: theme.primaryText,
-            ),
-            title: Text(
-              'Categories',
-              style: theme.typography.bodySmall,
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.favorite,
-              color: theme.primaryText,
-            ),
-            title: Text(
-              'Wishlist',
-              style: theme.typography.bodySmall,
-            ),
-            onTap: () {},
-          ),
-          // ListTile(
-          //   leading: Icon(
-          //     Icons.library_books,
-          //     color: theme.primaryText,
-          //   ),
-          //   title: Text(
-          //     'My Library',
-          //     style: theme.typography.bodySmall,
-          //   ),
-          //   onTap: () {
-          //
-          //   },
-          // ),
-          ListTile(
-            leading: Icon(
-              Icons.download,
-              color: theme.primaryText,
-            ),
-            title: Text(
-              'Downloads',
-              style: theme.typography.bodySmall,
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.person,
-              color: theme.primaryText,
-            ),
-            title: Text(
-              'Account',
-              style: theme.typography.bodySmall,
-            ),
-            onTap: () {},
-          ),
-          // ListTile(
-          //   leading: Icon(
-          //     Icons.history,
-          //     color: theme.primaryText,
-          //   ),
-          //   title: Text(
-          //     'Orders',
-          //     style: theme.typography.bodySmall,
-          //   ),
-          //   onTap: () {
-          //
-          //   },
-          // ),
-          ListTile(
-            leading: Icon(
               Icons.wb_sunny,
               color: theme.primaryText,
             ),
             title: Text(
               'Light theme',
               style: theme.typography.bodySmall,
+            ),
+            trailing: Switch(
+              thumbColor: WidgetStatePropertyAll(Colors.grey[200]),
+              trackColor: WidgetStatePropertyAll(Colors.grey[400]),
+              value: isLightTheme, // This should be a boolean state variable
+              onChanged: (bool value) {
+                setState(() {
+                  isLightTheme = value;
+                });
+                // Add additional logic here if needed to change the theme
+              },
             ),
             onTap: () {},
           ),
@@ -127,6 +73,30 @@ class LeftNavBar extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(
+              Icons.help_outline,
+              color: theme.primaryText,
+            ),
+            title: Text(
+              'Help and Support',
+              style: theme.typography.bodySmall,
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, "/help");
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.description_outlined,
+              color: theme.primaryText,
+            ),
+            title: Text(
+              'Terms and Conditions',
+              style: theme.typography.bodySmall,
+            ),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: Icon(
               Icons.info,
               color: theme.primaryText,
             ),
@@ -134,7 +104,9 @@ class LeftNavBar extends StatelessWidget {
               'About Us',
               style: theme.typography.bodySmall,
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, "/about");
+            },
           ),
           const Divider(),
           ListTile(
@@ -156,6 +128,13 @@ class LeftNavBar extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.delete, color: Colors.red),
+            title: Text(
+              'Delete Account',
+              style: theme.typography.bodySmall,
+            ),
+          )
         ],
       ),
     );

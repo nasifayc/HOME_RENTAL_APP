@@ -10,6 +10,8 @@ import 'package:home_app/repositories/house.dart';
 import 'package:home_app/screen/layout/login_page.dart';
 import 'package:home_app/screen/layout/otp_screen.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
+import 'package:home_app/screen/main_screens/about.dart';
+import 'package:home_app/screen/main_screens/help_and_support.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +38,8 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginPage(),
           '/signup': (context) => const SignUpPage(),
           '/otp': (context) => const OtpScreen(),
+          "/help": (context) => const HelpAndSupport(),
+          "/about": (context) => AboutUsPage()
         },
         home: const AppNavigator(),
       ),
