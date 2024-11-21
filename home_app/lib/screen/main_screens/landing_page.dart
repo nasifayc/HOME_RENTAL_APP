@@ -34,7 +34,7 @@ class LandingPage extends StatelessWidget {
             case BottomNavState.home:
               return const HomeScreen();
             case BottomNavState.post:
-              return const PostScreen();
+              return AddHouseScreen();
             case BottomNavState.chat:
               return const ChatScreen();
             default:

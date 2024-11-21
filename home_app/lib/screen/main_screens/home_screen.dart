@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Townhouses',
     'Penthouses',
     'Duplexes',
+    
   ];
 
   @override
