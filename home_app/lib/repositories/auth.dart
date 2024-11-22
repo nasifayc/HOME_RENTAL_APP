@@ -12,7 +12,6 @@ class AuthRepository implements IAuthRepository {
   @override
   Future<Either<AuthError?, AuthToken?>> signUp(
       String name, String phoneNumber, String password, String role) async {
-    
     try {
       final response = await http.post(
         Uri.parse('$baserURL/auth/signup'),
@@ -88,6 +87,50 @@ class AuthRepository implements IAuthRepository {
 
         return Left(AuthError(
             phoneNumberError.toString(), passwordError.toString(), "", "", ''));
+      } else {
+        return Left(AuthError("", "", "", "server error", ''));
+      }
+    } catch (e) {
+      print(e);
+      return Left(AuthError("", "", "", "Server Error", ''));
+    }
+  }
+
+  @override
+  Future<Either<AuthError?, String?>> changePassword(
+      String oldPassword, String newPassword) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final _ = prefs.getString("refreshToken") ?? '';
+      final accessToken = prefs.getString("accessToken") ?? '';
+      final response = await http.patch(
+        Uri.parse('$baserURL/auth/change-password'),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({
+          "old_password": oldPassword,
+          "new_password": newPassword,
+        }),
+      );
+
+      print(response.body);
+
+      if (response.statusCode == 204) {
+        return const Right('');
+      } else if (response.statusCode == 422) {
+        return Left(AuthError("", "old password is incorrect", "", "", ''));
+      } else if (response.statusCode == 401) {
+        return Left(AuthError("", "Unauthorized", "", "", ''));
+      } else if (response.statusCode == 400) {
+        final data = jsonDecode(response.body);
+
+        final oldPasswordError = data["errors"]["old_password"] ?? "";
+        final newPasswordError = data["errors"]["new_password"] ?? "";
+
+        return Left(AuthError(newPasswordError.toString(),
+            oldPasswordError.toString(), "", "", ''));
       } else {
         return Left(AuthError("", "", "", "server error", ''));
       }

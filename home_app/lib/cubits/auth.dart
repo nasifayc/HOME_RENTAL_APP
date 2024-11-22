@@ -44,4 +44,16 @@ class AuthCubit extends Cubit<AuthState> {
     await prefs.remove("refreshToken");
     emit(UnAuthenticated());
   }
+
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    emit(AuthLoading());
+
+    final response = await authRepo.changePassword(oldPassword, newPassword);
+
+    response.fold((error) {
+      emit(error!);
+    }, (success) {
+      emit(ChangeSuccessState());
+    });
+  }
 }

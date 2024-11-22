@@ -159,7 +159,7 @@ class CategoryChips extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color.fromARGB(255, 26, 109, 192)
+                    ? Colors.black
                     : const Color.fromARGB(255, 241, 241, 241),
                 borderRadius: BorderRadius.circular(10.0),
               ),

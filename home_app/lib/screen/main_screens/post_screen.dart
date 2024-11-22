@@ -30,11 +30,10 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   Future<void> _pickMainImage() async {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _mainImage = image;
-      });
-    }
+
+    setState(() {
+      _mainImage = image;
+    });
   }
 
   Future<void> _pickSubImages() async {
@@ -58,6 +57,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
       'Duplexes',
       'Others'
     ];
+    final houseCubit = BlocProvider.of<HouseCubit>(context);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -195,7 +195,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                 ListTile(
                   title: const Text("For Rent"),
                   trailing: Switch(
-                    trackColor: const WidgetStatePropertyAll(Colors.blueAccent),
+                    trackColor: const WidgetStatePropertyAll(Colors.black),
                     thumbColor: const WidgetStatePropertyAll(Colors.white),
                     value: _forRent,
                     onChanged: (value) {
@@ -284,22 +284,22 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // houseCubit.addHouse(
-                        //     _titleController.text,
-                        //     _locationController.text,
-                        //     _descriptionController.text,
-                        //     num.parse(_priceController.text),
-                        //     _selectedCategory!,
-                        //     _bedrooms,
-                        //     _bathrooms,
-                        //     _floors,
-                        //     _forRent,
-                        //     _mainImage!,
-                        //     _subImages.map((image) => image).toList());
+                        houseCubit.addHouse(
+                            _titleController.text,
+                            _locationController.text,
+                            _descriptionController.text,
+                            num.parse(_priceController.text),
+                            _selectedCategory!,
+                            _bedrooms,
+                            _bathrooms,
+                            _floors,
+                            _forRent,
+                            _mainImage!,
+                            _subImages.map((image) => image).toList());
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 29, 76, 157),
+                      backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
