@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/theme/app_theme.dart';
-import 'package:home_app/widget/common/form_components.dart';
-import 'package:home_app/widget/home/carousel_image.dart';
-import 'package:home_app/widget/home/categories.dart';
+import 'package:home_app/cubits/house.dart';
+import 'package:home_app/model/house_model.dart';
+import 'package:home_app/states/house_state.dart';
 import 'package:home_app/widget/home/popular_section.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,67 +14,195 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int? selectedChipIndex = 0;
   final TextEditingController _searchController = TextEditingController();
+
+  final categories = [
+    'All',
+    'Apartments',
+    'Villas',
+    'Studios',
+    'Townhouses',
+    'Penthouses',
+    'Duplexes',
+  ];
+
+  @override
+  void initState() {
+    BlocProvider.of<HouseCubit>(context).fetchHouses();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     AppTheme theme = AppTheme.of(context);
-    FormComponents formComponents = FormComponents(context: context);
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CarouselImage(),
-              const SizedBox(height: 20),
-              formComponents.buildSearchBar(_searchController, 'Search', true),
-              const SizedBox(height: 20),
-              Text(
-                'Categories',
-                style:
-                    theme.typography.titleMedium.copyWith(color: theme.primary),
-              ),
-              const SizedBox(height: 10),
-              const Categories(),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Popular',
-                    style: theme.typography.titleMedium
-                        .copyWith(color: theme.primary),
+    return BlocBuilder<HouseCubit, HouseState>(
+      builder: (context, state) {
+        if (state is HouseLoaded) {
+          List<HouseModel> filteredProducts = state.houses;
+          if (selectedChipIndex != 0) {
+            filteredProducts = state.houses.where((product) {
+              return product.category == categories[selectedChipIndex!];
+            }).toList();
+          }
+
+          List<HouseModel> searchList = filteredProducts.where((product) {
+            return product.title
+                .toLowerCase()
+                .contains(_searchController.text.trim().toLowerCase());
+          }).toList();
+
+          return Scaffold(
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      SearchBar(controller: _searchController),
+                      const SizedBox(height: 20),
+                      SectionTitle(title: 'Categories', theme: theme),
+                      const SizedBox(height: 10),
+                      CategoryChips(
+                        categories: categories,
+                        selectedIndex: selectedChipIndex,
+                        onChipSelected: (index) {
+                          setState(() {
+                            selectedChipIndex = index;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      SectionTitle(title: 'Popular', theme: theme),
+                      const SizedBox(height: 10),
+                      PopularSectionList(houses: searchList),
+                      const SizedBox(height: 25),
+                      SectionTitle(title: 'For Sell', theme: theme),
+                      const SizedBox(height: 10),
+                      PopularSectionList(
+                        houses: searchList
+                            .where((house) => !house.forRent)
+                            .toList(),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'See all',
-                    style: theme.typography.bodySmall,
-                  )
-                ],
+                ),
               ),
-              const SizedBox(height: 10),
-              const SizedBox(height: 230, child: PopularSection()),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'For Sell',
-                    style: theme.typography.titleMedium
-                        .copyWith(color: theme.primary),
-                  ),
-                  Text(
-                    'See all',
-                    style: theme.typography.bodySmall,
-                  )
-                ],
-              ),
-              const SizedBox(height: 10),
-              const SizedBox(height: 230, child: PopularSection()),
-            ],
-          ),
+            ),
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+}
+
+class SearchBar extends StatelessWidget {
+  final TextEditingController controller;
+
+  const SearchBar({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      onChanged: (value) => {
+        context.findAncestorStateOfType<_HomeScreenState>()?.setState(() {})
+      },
+      decoration: InputDecoration(
+        labelStyle: const TextStyle(color: Color.fromARGB(255, 115, 113, 113)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide.none,
         ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide.none,
+        ),
+        hintText: "Search",
+        hintStyle: TextStyle(color: Colors.grey.shade700),
+        prefixIcon: const Icon(Icons.search),
+        filled: true,
+        fillColor: const Color.fromARGB(255, 241, 241, 241),
       ),
+    );
+  }
+}
+
+class CategoryChips extends StatelessWidget {
+  final List<String> categories;
+  final int? selectedIndex;
+  final Function(int?) onChipSelected;
+
+  const CategoryChips({
+    super.key,
+    required this.categories,
+    required this.selectedIndex,
+    required this.onChipSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 32,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: List<Widget>.generate(categories.length, (int index) {
+          final isSelected = selectedIndex == index;
+          return GestureDetector(
+            onTap: () => onChipSelected(isSelected ? null : index),
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color.fromARGB(255, 26, 109, 192)
+                    : const Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Text(
+                categories[index],
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+  final AppTheme theme;
+
+  const SectionTitle({super.key, required this.title, required this.theme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: theme.typography.titleMedium.copyWith(color: theme.primary),
+    );
+  }
+}
+
+class PopularSectionList extends StatelessWidget {
+  final List<HouseModel> houses;
+
+  const PopularSectionList({super.key, required this.houses});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 230,
+      child: PopularSection(houses: houses),
     );
   }
 }

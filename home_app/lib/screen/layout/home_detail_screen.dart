@@ -83,13 +83,13 @@ class HomeDetailScreen extends StatelessWidget {
                           Icons.account_circle,
                           color: theme.primary,
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Owner: ${houseModel.owner}',
-                          style: theme.typography.bodyMedium.copyWith(
-                            color: Colors.black54,
-                          ),
-                        ),
+                        // SizedBox(width: 8),
+                        // Text(
+                        //   'Owner: ${houseModel.owner}',
+                        //   style: theme.typography.bodyMedium.copyWith(
+                        //     color: Colors.black54,
+                        //   ),
+                        // ),
                       ],
                     ),
                     SizedBox(height: 16),
@@ -98,11 +98,11 @@ class HomeDetailScreen extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: houseModel.forSell ? Colors.green : Colors.blue,
+                        color: houseModel.forRent ? Colors.green : Colors.blue,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        houseModel.forSell ? 'For Sale' : 'For Rent',
+                        houseModel.forRent ? 'For Rent' : 'For Sale',
                         style: theme.typography.bodyMedium.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

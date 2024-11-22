@@ -6,9 +6,13 @@ class HouseModel extends Equatable {
   final List<String> subImages;
   final String location;
   final String description;
-  final double price;
-  final bool forSell;
-  final String owner;
+  final num price;
+  final bool forRent;
+  final String ownerId;
+  final String category;
+  final num numberOfBedrooms;
+  final num numberOfBathrooms;
+  final num numberOfFloors;
 
   const HouseModel(
       {required this.title,
@@ -17,8 +21,12 @@ class HouseModel extends Equatable {
       required this.location,
       required this.description,
       required this.price,
-      required this.forSell,
-      required this.owner});
+      required this.forRent,
+      required this.ownerId,
+      required this.category,
+      required this.numberOfBathrooms,
+      required this.numberOfBedrooms,
+      required this.numberOfFloors});
 
   Map<String, dynamic> toJson() {
     return {
@@ -28,22 +36,29 @@ class HouseModel extends Equatable {
       'location': location,
       'description': description,
       'price': price,
-      'forSell': forSell,
-      'owner': owner,
+      'for_rent': forRent,
+      'ownerId': ownerId,
+      'category': category,
+      'number_of_bedrooms': numberOfBedrooms,
+      "number_of_bathrooms": numberOfBathrooms,
+      "number_of_floors": numberOfFloors
     };
   }
 
-  factory HouseModel.fromJson(Map<String, dynamic> toJson) {
+  factory HouseModel.fromJson(Map<String, dynamic> jsonHouse) {
     return HouseModel(
-      title: toJson['title'],
-      mainImage: toJson['mainImage'],
-      subImages: toJson['subImages'],
-      location: toJson['location'],
-      description: toJson['description'],
-      price: toJson['price'],
-      forSell: toJson['forSell'],
-      owner: toJson['owner'],
-    );
+        title: jsonHouse['title'],
+        mainImage: jsonHouse['main_image'],
+        subImages: List<String>.from(jsonHouse["sub_images"] ?? []),
+        location: jsonHouse['location'],
+        description: jsonHouse['description'],
+        price: jsonHouse['price'],
+        forRent: jsonHouse['for_rent'],
+        ownerId: jsonHouse['ownerId'],
+        numberOfBathrooms: jsonHouse['number_of_bathrooms'],
+        numberOfBedrooms: jsonHouse['number_of_bedrooms'],
+        numberOfFloors: jsonHouse['number_of_floors'],
+        category: jsonHouse['category']);
   }
   @override
   List<Object?> get props => [
@@ -53,7 +68,11 @@ class HouseModel extends Equatable {
         location,
         description,
         price,
-        forSell,
-        owner,
+        forRent,
+        ownerId,
+        category,
+        numberOfBathrooms,
+        numberOfBedrooms,
+        numberOfFloors
       ];
 }
