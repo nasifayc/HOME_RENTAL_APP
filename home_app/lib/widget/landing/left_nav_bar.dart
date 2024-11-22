@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/controller/theme/theme_cubit.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart';
 import 'package:home_app/cubits/user.dart';
@@ -80,26 +83,30 @@ class _LeftNavBarState extends State<LeftNavBar> {
                   color: theme.primary,
                 ),
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.wb_sunny,
-                  color: theme.primaryText,
-                ),
-                title: Text(
-                  'Light theme',
-                  style: theme.typography.bodySmall,
-                ),
-                trailing: Switch(
-                  thumbColor: WidgetStatePropertyAll(Colors.grey[200]),
-                  trackColor: WidgetStatePropertyAll(Colors.grey[400]),
-                  value: isLightTheme,
-                  onChanged: (bool value) {
-                    setState(() {
-                      isLightTheme = value;
-                    });
-                    // Add logic for theme toggle if necessary
-                  },
-                ),
+              BlocBuilder<ThemeCubit, ThemeMode>(
+                builder: (context, state) {
+                  return ListTile(
+                    leading: Icon(
+                      Icons.wb_sunny,
+                      color: theme.primaryText,
+                    ),
+                    title: Text(
+                      state == ThemeMode.dark ? 'Light Mode' : 'Dark Mode',
+                      style: theme.typography.bodySmall,
+                    ),
+                    trailing: Switch(
+                      thumbColor: WidgetStatePropertyAll(Colors.grey[200]),
+                      trackColor: WidgetStatePropertyAll(Colors.grey[400]),
+                      value: state == ThemeMode.dark,
+                      onChanged: (bool value) {
+                        final isDarkMode = state == ThemeMode.dark;
+                        log(state.name);
+                        context.read<ThemeCubit>().toggleTheme(!isDarkMode);
+                        // Add logic for theme toggle if necessary
+                      },
+                    ),
+                  );
+                },
               ),
               ListTile(
                 leading: Icon(

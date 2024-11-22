@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/controller/theme/theme_cubit.dart';
 import 'package:home_app/core/app_navigator.dart';
 import 'package:home_app/core/bottom_nav_cubit/bottom_nav_cubit.dart';
 import 'package:home_app/core/theme/app_theme.dart';
@@ -14,7 +15,6 @@ import 'package:home_app/screen/layout/otp_screen.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/main_screens/about.dart';
 import 'package:home_app/screen/main_screens/help_and_support.dart';
-import 'package:home_app/screen/main_screens/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,24 +33,31 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => BottomNavCubit()),
         BlocProvider(create: (context) => AuthCubit(authRepo: authRepo)),
         BlocProvider(create: (context) => HouseCubit(houseRepo: houseRepo)),
+        BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) {
           final userCubit = UserCubit(userRepo: userRepo);
           userCubit.getProfile();
           return userCubit;
         })
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'ebook store',
-        theme: LightModeTheme().themeData,
-        routes: {
-          '/login': (context) => const LoginPage(),
-          '/signup': (context) => const SignUpPage(),
-          '/otp': (context) => const OtpScreen(),
-          "/help": (context) => const HelpAndSupport(),
-          "/about": (context) => AboutUsPage(),
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, state) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'ebook store',
+            theme: LightModeTheme().themeData,
+            darkTheme: DarkModeTheme().themeData,
+            themeMode: state,
+            routes: {
+              '/login': (context) => const LoginPage(),
+              '/signup': (context) => const SignUpPage(),
+              '/otp': (context) => const OtpScreen(),
+              "/help": (context) => const HelpAndSupport(),
+              "/about": (context) => AboutUsPage(),
+            },
+            home: const AppNavigator(),
+          );
         },
-        home: const AppNavigator(),
       ),
     );
   }
