@@ -102,7 +102,6 @@ class _LeftNavBarState extends State<LeftNavBar> {
                         final isDarkMode = state == ThemeMode.dark;
                         log(state.name);
                         context.read<ThemeCubit>().toggleTheme(!isDarkMode);
-                        // Add logic for theme toggle if necessary
                       },
                     ),
                   );

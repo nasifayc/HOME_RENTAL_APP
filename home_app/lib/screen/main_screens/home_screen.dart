@@ -28,12 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
-  void initState() {
-    BlocProvider.of<HouseCubit>(context).fetchHouses();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     AppTheme theme = AppTheme.of(context);
     return BlocBuilder<HouseCubit, HouseState>(

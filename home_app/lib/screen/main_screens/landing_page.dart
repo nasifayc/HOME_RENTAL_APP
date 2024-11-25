@@ -30,6 +30,7 @@ class LandingPage extends StatelessWidget {
       child: BlocBuilder<BottomNavCubit, BottomNavState>(
         builder: (context, bottomNavState) {
           final authCubit = BlocProvider.of<AuthCubit>(context);
+          
 
           bool canPost = false; // Default
           if (authCubit.state is Authenticated) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/model/house_model.dart';
+import 'package:home_app/screen/main_screens/chat_detail_screen.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HouseDetailScreen extends StatelessWidget {
   final HouseModel house;
@@ -23,7 +25,7 @@ class HouseDetailScreen extends StatelessWidget {
         children: [
           // Main image at the top
           Image.network(
-            "http://10.5.193.51:3000/${house.mainImage}",
+            "http://192.168.78.41:3000/${house.mainImage}",
             height: 250,
             width: double.infinity,
             fit: BoxFit.cover,
@@ -203,7 +205,11 @@ class HouseDetailScreen extends StatelessWidget {
               icon: Icons.message,
               label: "Message",
               onTap: () {
-                // Add message logic here
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatDetailScreen(id: house.ownerId),
+                    ));
               },
             ),
           ],
