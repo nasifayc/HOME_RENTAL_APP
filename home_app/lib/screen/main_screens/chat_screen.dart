@@ -26,7 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     BlocProvider.of<ChatCubit>(context).fetchChats();
-    connectSocket();
+
     getUserId();
     super.initState();
   }
@@ -48,19 +48,6 @@ class _ChatScreenState extends State<ChatScreen> {
     } catch (e) {
       print('Error decoding JWT: $e');
     }
-  }
-
-  void connectSocket() {
-    socket = IO.io("http://192.168.78.41:3000/", <String, dynamic>{
-      "transports": ["websocket"],
-      "autoConnect": false,
-    });
-
-    socket.connect();
-
-    socket.on("connect", (_) {
-      log("Connected to socket");
-    });
   }
 
   @override

@@ -32,9 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
     AppTheme theme = AppTheme.of(context);
     return BlocBuilder<HouseCubit, HouseState>(
       builder: (context, state) {
-        if (state is HouseError) {
-          print(state.message);
-        }
         if (state is HouseLoaded) {
           List<HouseModel> filteredProducts = state.houses;
           if (selectedChipIndex != 0) {
@@ -149,7 +146,7 @@ class CategoryChips extends StatelessWidget {
         children: List<Widget>.generate(categories.length, (int index) {
           final isSelected = selectedIndex == index;
           return GestureDetector(
-            onTap: () => onChipSelected(isSelected ? null : index),
+            onTap: () => onChipSelected(index),
             child: Container(
               margin: const EdgeInsets.only(right: 10),
               padding:

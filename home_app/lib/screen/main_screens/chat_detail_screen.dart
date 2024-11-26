@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/cubits/chat.dart';
 import 'package:home_app/model/message_model.dart';
-import 'package:home_app/services/socket.dart';
 import 'package:home_app/states/chat_state.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -110,154 +109,164 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   Widget build(BuildContext context) {
     final chatCubit = BlocProvider.of<ChatCubit>(context);
 
-    return BlocConsumer<ChatCubit, ChatState>(listener: (context, state) {
-      if (state is SingleChatLoaded) {
-        setState(() {
-          messages = List.from(state.chat.messages);
-        });
-      }
-    }, builder: (context, state) {
-      if (state is SingleChatLoaded) {
-        final chat = state.chat;
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(chat.users[1].name),
-            centerTitle: true,
-          ),
-          body: Column(
-            children: [
-              messages.isEmpty
-                  ? const Expanded(
-                      flex: 8,
-                      child: Center(
-                        child: Text("Start Conversation"),
-                      ),
-                    )
-                  : Expanded(
-                      child: ListView.builder(
-                          controller: _scrollController,
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            return Align(
-                              alignment: widget.id == chat.messages[index].owner
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: GestureDetector(
-                                onLongPress: () {
-                                  chatCubit.deleteMessage(
-                                      messages[index].id, widget.id);
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: widget.id != messages[index].owner
-                                        ? Colors.teal
-                                        : Colors.blueGrey[200],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 200.0, // Limit width to 200
-                                    ),
-                                    child: IntrinsicWidth(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              chat.messages[index].content,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                              softWrap:
-                                                  true, // Allow text wrapping
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                              height:
-                                                  4), // Spacing between text and time
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
+    return WillPopScope(
+        onWillPop: () async {
+          chatCubit.fetchChats();
+          return true;
+        },
+        child: BlocConsumer<ChatCubit, ChatState>(listener: (context, state) {
+          if (state is SingleChatLoaded) {
+            setState(() {
+              messages = List.from(state.chat.messages);
+            });
+          }
+        }, builder: (context, state) {
+          if (state is SingleChatLoaded) {
+            final chat = state.chat;
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(chat.users[1].name),
+                centerTitle: true,
+              ),
+              body: Column(
+                children: [
+                  messages.isEmpty
+                      ? const Expanded(
+                          flex: 8,
+                          child: Center(
+                            child: Text("Start Conversation"),
+                          ),
+                        )
+                      : Expanded(
+                          child: ListView.builder(
+                              controller: _scrollController,
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) {
+                                return Align(
+                                  alignment:
+                                      widget.id == chat.messages[index].owner
+                                          ? Alignment.centerRight
+                                          : Alignment.centerLeft,
+                                  child: GestureDetector(
+                                    onLongPress: () {
+                                      chatCubit.deleteMessage(
+                                          messages[index].id, widget.id);
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            widget.id != messages[index].owner
+                                                ? Colors.teal
+                                                : Colors.blueGrey[200],
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 200.0, // Limit width to 200
+                                        ),
+                                        child: IntrinsicWidth(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
                                             children: [
-                                              Text(
-                                                extractHourMinuteAmPm(
-                                                    chat.messages[index].time),
-                                                style: const TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w200,
-                                                  color: Colors.white,
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  chat.messages[index].content,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.white,
+                                                  ),
+                                                  softWrap:
+                                                      true, // Allow text wrapping
                                                 ),
+                                              ),
+                                              const SizedBox(
+                                                  height:
+                                                      4), // Spacing between text and time
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    extractHourMinuteAmPm(chat
+                                                        .messages[index].time),
+                                                    style: const TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.w200,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                );
+                              })),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _messageController,
+                            decoration: InputDecoration(
+                              hintText: "Enter a message",
+                              filled: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 10),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: Colors.teal),
                               ),
-                            );
-                          })),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: InputDecoration(
-                          hintText: "Enter a message",
-                          filled: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.teal),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.teal),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide:
+                                    const BorderSide(color: Colors.teal),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        IconButton(
+                          icon: const Icon(Icons.send),
+                          color: Colors.teal,
+                          iconSize: 28,
+                          onPressed: () {
+                            sendMessage(
+                                chatCubit,
+                                widget.id != state.chat.users[0].id
+                                    ? state.chat.users[1].id
+                                    : state.chat.users[0].id);
+                            _scrollController.animateTo(
+                              _scrollController.position.extentAfter,
+                              duration: const Duration(milliseconds: 100),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    IconButton(
-                      icon: const Icon(Icons.send),
-                      color: Colors.teal,
-                      iconSize: 28,
-                      onPressed: () {
-                        sendMessage(
-                            chatCubit,
-                            widget.id != state.chat.users[0].id
-                                ? state.chat.users[1].id
-                                : state.chat.users[0].id);
-                        _scrollController.animateTo(
-                          _scrollController.position.extentAfter,
-                          duration: const Duration(milliseconds: 100),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }
+            );
+          }
 
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }));
   }
 }
 
