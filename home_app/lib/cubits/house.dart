@@ -9,7 +9,6 @@ class HouseCubit extends Cubit<HouseState> {
   Future<void> fetchHouses() async {
     emit(HouseLoading());
     final response = await houseRepo.fetchHouses();
-
     response.fold((houses) {
       emit(HouseLoaded(houses!));
     }, (error) {

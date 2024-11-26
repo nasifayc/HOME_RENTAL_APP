@@ -17,7 +17,6 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> fetchChat(String id) async {
-    emit(ChatLoading());
     final response = await chatRepo.fetchChat(id);
 
     response.fold((chat) {
@@ -28,9 +27,18 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> addMessage(String content, String recipientId) async {
-    emit(ChatLoading());
     final response = await chatRepo.addChat(content, recipientId);
 
+    response.fold((chat) {
+      fetchChat(recipientId);
+    }, (error) {
+      emit(error!);
+    });
+  }
+
+  Future<void> deleteMessage(String id, String recipientId) async {
+    final response = await chatRepo.deleteMessage(id);
+    print(response);
     response.fold((chat) {
       fetchChat(recipientId);
     }, (error) {

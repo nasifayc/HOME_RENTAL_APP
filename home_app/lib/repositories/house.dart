@@ -23,7 +23,7 @@ class HouseRepository implements IHouseRepository {
           "Content-Type": "application/json"
         },
       );
-      print(response.statusCode);
+      
       if (response.statusCode == 200) {
         List<dynamic> houseJson = jsonDecode(response.body);
         return Left(

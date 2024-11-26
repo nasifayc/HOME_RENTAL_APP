@@ -7,4 +7,5 @@ abstract class IChatRepository {
   Future<Either<Chat?, ChatError?>> fetchChat(id);
   Future<Either<String?, ChatError?>> addChat(
       String content, String recipientId);
+  Future<Either<String?, ChatError?>> deleteMessage(String id);
 }

@@ -5,7 +5,7 @@ class Chat {
   final String id;
   final List<User> users;
   final List<Message> messages;
-  final Message lastMessage;
+  final Message? lastMessage;
   final String lastUpdatedTime;
 
   Chat(

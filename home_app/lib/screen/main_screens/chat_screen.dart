@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/cubits/chat.dart';
+import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/main_screens/chat_detail_screen.dart';
 import 'package:home_app/states/chat_state.dart';
-import 'package:home_app/utils/api_url.dart';
-// ignore: library_prefixes
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
@@ -20,36 +21,51 @@ class _ChatScreenState extends State<ChatScreen> {
   late IO.Socket socket;
   List<String> messages = [];
   String? selectedUser; // Currently selected user to chat with
+  String? userid;
 
   @override
   void initState() {
     BlocProvider.of<ChatCubit>(context).fetchChats();
     connectSocket();
+    getUserId();
     super.initState();
   }
 
+  void getUserId() async {
+    final pref = await SharedPreferences.getInstance();
+    final token = pref.getString("accessToken");
+    try {
+      final parts = token!.split('.');
+      if (parts.length == 3) {
+        final payload =
+            utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+        final payloadMap =
+            jsonDecode(payload); // Convert payload string to a JSON map
+        final id = payloadMap['id']; // Extract the role
+        userid = id;
+        print(userid);
+      }
+    } catch (e) {
+      print('Error decoding JWT: $e');
+    }
+  }
+
   void connectSocket() {
-    socket = IO.io(baserURL, <String, dynamic>{
+    socket = IO.io("http://192.168.78.41:3000/", <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,
     });
+
     socket.connect();
 
     socket.on("connect", (_) {
       log("Connected to socket");
     });
-
-    socket.on("receiveMessage", (data) {
-      if (data["sender"] == selectedUser || data["receiver"] == selectedUser) {
-        setState(() {
-          messages.add(data["content"]);
-        });
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print(userid);
     return Container(
       child: BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
         if (state is ChatLoaded) {
@@ -68,9 +84,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ChatDetailScreen(
-                              id: chats[index].users[1].id, socket: socket),
-                        ));
+                            builder: (context) => userid != null
+                                ? ChatDetailScreen(
+                                    id: userid == chats[index].users[1].id
+                                        ? chats[index].users[0].id
+                                        : chats[index].users[1].id,
+                                    userid: userid!,
+                                  )
+                                : const LoginPage()));
                   },
                   leading: CircleAvatar(
                     backgroundColor: Colors.teal,

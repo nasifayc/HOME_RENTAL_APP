@@ -37,7 +37,10 @@ class ChatRepository implements IChatRepository {
           for (var message in chat['messages']) {
             messages.add(Message.fromJson(message));
           }
-          final lastMessage = Message.fromJson(chat['lastMessage']);
+
+          final lastMessage = chat['lastMessage'] != null
+              ? Message.fromJson(chat['lastMessage'])
+              : null;
 
           final newChat = Chat(
               id: chat['_id'],
@@ -54,6 +57,7 @@ class ChatRepository implements IChatRepository {
 
       return Right(ChatError('error fetching messages'));
     } catch (e) {
+      print(e);
       return Right(ChatError('error fetching messages'));
     }
   }
@@ -75,6 +79,24 @@ class ChatRepository implements IChatRepository {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
+        if (data["_id"] == null) {
+          final user1 = User.fromJson(data['users'][0]);
+          final user2 = User.fromJson(data['users'][1]);
+
+          return Left(Chat(
+              id: "",
+              lastMessage: Message(
+                  id: "",
+                  chatId: "",
+                  content: "",
+                  owner: "",
+                  seen: false,
+                  time: ""),
+              lastUpdatedTime: "",
+              messages: [],
+              users: [user1, user2]));
+        }
+
         List<Message> messages = [];
         final user1 = User.fromJson(data['users'][0]);
         final user2 = User.fromJson(data['users'][1]);
@@ -82,7 +104,9 @@ class ChatRepository implements IChatRepository {
         for (var message in data['messages']) {
           messages.add(Message.fromJson(message));
         }
-        final lastMessage = Message.fromJson(data['lastMessage']);
+        final lastMessage = data['lastMessage'] != null
+            ? Message.fromJson(data['lastMessage'])
+            : null;
 
         final newChat = Chat(
             id: data['_id'],
@@ -96,6 +120,7 @@ class ChatRepository implements IChatRepository {
 
       return Right(ChatError('error fetching messages'));
     } catch (e) {
+      print(e);
       return Right(ChatError('error fetching messages'));
     }
   }
@@ -126,6 +151,32 @@ class ChatRepository implements IChatRepository {
       return Right(ChatError('error adding messages'));
     } catch (e) {
       return Right(ChatError('error adding messages'));
+    }
+  }
+
+  @override
+  Future<Either<String?, ChatError?>> deleteMessage(String id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final _ = prefs.getString("refreshToken") ?? '';
+      final accessToken = prefs.getString("accessToken") ?? '';
+      final response = await http.delete(
+        Uri.parse("$baserURL/messages/$id"),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Content-Type": "application/json"
+        },
+      );
+
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        return const Left("okay");
+      }
+
+      return Right(ChatError('error fetching messages'));
+    } catch (e) {
+      return Right(ChatError('error fetching messages'));
     }
   }
 }
