@@ -168,4 +168,39 @@ class AuthRepository implements IAuthRepository {
       return Left(AuthError("", "", "", "Server Error", ''));
     }
   }
+
+  @override
+  Future<Either<AuthError?, AuthToken?>> checkToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString("refreshToken") ?? '';
+    final accessToken = prefs.getString("accessToken") ?? '';
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baserURL/auth/verify-token'),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({
+          "token": refreshToken,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        print(data);
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('accessToken', data["access_token"]);
+
+        AuthToken authToken = AuthToken.fromJson(data);
+        return Right(authToken);
+      } else {
+        return Left(AuthError("", "", "", "", ""));
+      }
+    } catch (e) {
+      print(e);
+      return Left(AuthError("", "", "", "", ""));
+    }
+  }
 }

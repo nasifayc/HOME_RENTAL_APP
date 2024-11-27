@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/cubits/auth.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
+import 'package:home_app/screen/main_screens/auth_page.dart';
 import 'package:home_app/screen/onboarding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +16,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    authCubit.checkToken();
     super.initState();
     // Delay for 5 seconds and navigate to the next screen
     Future.delayed(const Duration(seconds: 5), () async {
@@ -26,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
+          MaterialPageRoute(builder: (context) => const AuthPage()),
         );
       }
     });
