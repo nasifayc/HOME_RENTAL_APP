@@ -6,7 +6,6 @@ class ChatCubit extends Cubit<ChatState> {
   final IChatRepository chatRepo;
   ChatCubit({required this.chatRepo}) : super(ChatInitial());
   Future<void> fetchChats() async {
-    emit(ChatLoading());
     final response = await chatRepo.fetchChats();
 
     response.fold((chats) {

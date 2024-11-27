@@ -9,7 +9,6 @@ class HouseCubit extends Cubit<HouseState> {
   final IHouseRepository houseRepo;
   HouseCubit({required this.houseRepo}) : super(HouseInitial());
   Future<void> fetchHouses() async {
-    emit(HouseLoading());
     final response = await houseRepo.fetchHouses();
     response.fold((houses) {
       emit(HouseLoaded(houses!));
@@ -30,7 +29,6 @@ class HouseCubit extends Cubit<HouseState> {
       bool forRent,
       File mainImage,
       List<XFile> subImages) async {
-    emit(HouseLoading());
     final response = await houseRepo.addHouse(
         title,
         location,

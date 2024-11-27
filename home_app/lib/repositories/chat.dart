@@ -15,15 +15,45 @@ class ChatRepository implements IChatRepository {
   Future<Either<List<Chat>?, ChatError?>> fetchChats() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.get(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.get(
         Uri.parse("$baserURL/chats"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
         },
       );
+
+      // Handle 401 or 403 to retry fetching with refreshed token
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          // Retry fetching chats with new token
+          response = await http.get(
+            Uri.parse("$baserURL/chats"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+          );
+        } else {
+          return Right(ChatError('Failed to refresh access token'));
+        }
+      }
+
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -55,10 +85,11 @@ class ChatRepository implements IChatRepository {
         return Left(chats);
       }
 
-      return Right(ChatError('error fetching messages'));
+      return Right(
+          ChatError('Error fetching messages: ${response.statusCode}'));
     } catch (e) {
       print(e);
-      return Right(ChatError('error fetching messages'));
+      return Right(ChatError('Error fetching messages'));
     }
   }
 
@@ -66,15 +97,42 @@ class ChatRepository implements IChatRepository {
   Future<Either<Chat?, ChatError?>> fetchChat(id) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.get(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.get(
         Uri.parse("$baserURL/chats?user=$id"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
         },
       );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          // Retry fetching chats with new token
+          response = await http.get(
+            Uri.parse("$baserURL/chats?user=$id"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+          );
+        } else {
+          return Right(ChatError('Failed to refresh access token'));
+        }
+      }
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -130,9 +188,9 @@ class ChatRepository implements IChatRepository {
       String content, String recipientId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.post(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.post(
         Uri.parse("$baserURL/messages"),
         headers: {
           "Authorization": "Bearer $accessToken",
@@ -143,6 +201,36 @@ class ChatRepository implements IChatRepository {
           "recipientId": recipientId,
         }),
       );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.post(
+            Uri.parse("$baserURL/messages"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+            body: jsonEncode({
+              "content": content,
+              "recipientId": recipientId,
+            }),
+          );
+        } else {
+          return Right(ChatError('Failed to refresh access token'));
+        }
+      }
 
       if (response.statusCode == 201) {
         return const Left('');
@@ -158,9 +246,9 @@ class ChatRepository implements IChatRepository {
   Future<Either<String?, ChatError?>> deleteMessage(String id) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.delete(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.delete(
         Uri.parse("$baserURL/messages/$id"),
         headers: {
           "Authorization": "Bearer $accessToken",
@@ -168,7 +256,31 @@ class ChatRepository implements IChatRepository {
         },
       );
 
-      print(response.statusCode);
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.delete(
+            Uri.parse("$baserURL/messages/$id"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+          );
+        } else {
+          return Right(ChatError('Failed to refresh access token'));
+        }
+      }
 
       if (response.statusCode == 200) {
         return const Left("okay");

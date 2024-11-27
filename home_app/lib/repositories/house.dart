@@ -15,15 +15,41 @@ class HouseRepository implements IHouseRepository {
   Future<Either<List<HouseModel>?, HouseError?>> fetchHouses() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.get(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.get(
         Uri.parse("$baserURL/houses"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
         },
       );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.get(
+            Uri.parse("$baserURL/houses"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+          );
+        } else {
+          return Right(HouseError('Failed to refresh access token'));
+        }
+      }
 
       if (response.statusCode == 200) {
         List<dynamic> houseJson = jsonDecode(response.body);
@@ -70,20 +96,36 @@ class HouseRepository implements IHouseRepository {
 
       // Get access token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString("accessToken");
+      String accessToken = prefs.getString("accessToken") ?? '';
+      final refreshToken = prefs.getString("accessToken");
 
-      // Ensure the access token is not null
-      if (accessToken != null && accessToken.isNotEmpty) {
-        // Add authorization header with the access token
-        request.headers['Authorization'] = 'Bearer $accessToken';
-      } else {
-        return Right(HouseError('no access token'));
-      }
+      request.headers['Authorization'] = 'Bearer $accessToken';
 
       // Send the request
       var response = await request.send();
 
-      // Handle response
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          request.headers['Authorization'] = 'Bearer $accessToken';
+
+          response = await request.send();
+        } else {
+          return Right(HouseError('Failed to refresh access token'));
+        }
+      }
+
       if (response.statusCode == 201) {
         return const Left("upload success");
       } else {

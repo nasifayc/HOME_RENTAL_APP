@@ -31,6 +31,12 @@ class _LeftNavBarState extends State<LeftNavBar> {
   }
 
   @override
+  void initState() {
+    BlocProvider.of<UserCubit>(context).getProfile();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
     AppTheme theme = AppTheme.of(context);

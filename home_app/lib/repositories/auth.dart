@@ -101,9 +101,9 @@ class AuthRepository implements IAuthRepository {
       String oldPassword, String newPassword) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.patch(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.patch(
         Uri.parse('$baserURL/auth/change-password'),
         headers: {
           "Authorization": "Bearer $accessToken",
@@ -115,7 +115,36 @@ class AuthRepository implements IAuthRepository {
         }),
       );
 
-      print(response.body);
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.patch(
+            Uri.parse('$baserURL/auth/change-password'),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+            body: jsonEncode({
+              "old_password": oldPassword,
+              "new_password": newPassword,
+            }),
+          );
+        } else {
+          return Left(
+              AuthError('Failed to refresh access token', '', '', '', ''));
+        }
+      }
 
       if (response.statusCode == 204) {
         return const Right('');

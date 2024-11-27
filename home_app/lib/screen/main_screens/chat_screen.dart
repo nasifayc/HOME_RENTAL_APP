@@ -21,6 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
+    BlocProvider.of<ChatCubit>(context).fetchChats();
     getUserId();
     super.initState();
   }
