@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/cubits/chat.dart';
@@ -8,7 +6,6 @@ import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/main_screens/chat_detail_screen.dart';
 import 'package:home_app/states/chat_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -18,15 +15,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late IO.Socket socket;
   List<String> messages = [];
   String? selectedUser; // Currently selected user to chat with
   String? userid;
 
   @override
   void initState() {
-    BlocProvider.of<ChatCubit>(context).fetchChats();
-
     getUserId();
     super.initState();
   }
@@ -107,11 +101,5 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }),
     );
-  }
-
-  @override
-  void dispose() {
-    socket.disconnect();
-    super.dispose();
   }
 }

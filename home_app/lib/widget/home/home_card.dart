@@ -45,7 +45,7 @@ class HomeCard extends StatelessWidget {
                 ),
                 image: DecorationImage(
                   image: NetworkImage(
-                      "http://192.168.78.41:3000/${house.mainImage}",
+                      "http://192.168.236.41:3000/${house.mainImage}",
                       scale: 1),
                   fit: BoxFit.cover,
                 ),

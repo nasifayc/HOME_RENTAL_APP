@@ -60,7 +60,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         children: [
           // Main image at the top
           Image.network(
-            "http://192.168.78.41:3000/${widget.house.mainImage}",
+            "http://192.168.236.41:3000/${widget.house.mainImage}",
             height: 250,
             width: double.infinity,
             fit: BoxFit.cover,

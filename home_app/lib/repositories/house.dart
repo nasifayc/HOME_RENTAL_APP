@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:home_app/interfaces/house.dart';
@@ -23,7 +24,7 @@ class HouseRepository implements IHouseRepository {
           "Content-Type": "application/json"
         },
       );
-      
+
       if (response.statusCode == 200) {
         List<dynamic> houseJson = jsonDecode(response.body);
         return Left(
@@ -38,7 +39,7 @@ class HouseRepository implements IHouseRepository {
   }
 
   @override
-  Future<Either<List<HouseModel>?, HouseError?>> addHouse(
+  Future<Either<String?, HouseError?>> addHouse(
       String title,
       String location,
       String description,
@@ -48,19 +49,13 @@ class HouseRepository implements IHouseRepository {
       num bathrooms,
       num floors,
       bool forRent,
-      XFile mainImage,
+      File mainImage,
       List<XFile> subImages) async {
     try {
-      var uri = Uri.parse("$baserURL/houses");
-
-      // Create the multipart request
-      var request = http.MultipartRequest('POST', uri);
-
-      // Add the file to the request
-      var file = await http.MultipartFile.fromPath(
-        'main_image',
-        mainImage.path,
-      );
+      var request =
+          http.MultipartRequest('POST', Uri.parse('$baserURL/houses'));
+      request.files
+          .add(await http.MultipartFile.fromPath('main_image', mainImage.path));
 
       // Add additional form fields
       request.fields['title'] = title;
@@ -71,10 +66,7 @@ class HouseRepository implements IHouseRepository {
       request.fields["number_of_bedrooms"] = bedrooms.toString();
       request.fields["number_of_bathrooms"] = bathrooms.toString();
       request.fields["number_of_floors"] = floors.toString();
-      request.fields["for_Rent"] = forRent ? "true" : "false";
-
-      // Add the file to the request
-      request.files.add(file);
+      request.fields["for_rent"] = forRent ? "true" : "false";
 
       // Get access token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
@@ -85,22 +77,20 @@ class HouseRepository implements IHouseRepository {
         // Add authorization header with the access token
         request.headers['Authorization'] = 'Bearer $accessToken';
       } else {
-        print('Access token is missing or invalid.');
+        return Right(HouseError('no access token'));
       }
 
       // Send the request
       var response = await request.send();
 
       // Handle response
-      if (response.statusCode == 200) {
-        print('Upload successful');
+      if (response.statusCode == 201) {
+        return const Left("upload success");
       } else {
-        print('Upload failed: ${response.statusCode}');
+        return Right(HouseError('upload failed'));
       }
     } catch (e) {
-      print('Error occurred: $e');
+      return Right(HouseError('error occured'));
     }
-
-    return Right(HouseError(''));
   }
 }

@@ -33,7 +33,11 @@ class MyApp extends StatelessWidget {
     final chatRepo = ChatRepository();
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ChatCubit(chatRepo: chatRepo)),
+        BlocProvider(create: (context) {
+          final chatCubit = ChatCubit(chatRepo: chatRepo);
+          chatCubit.fetchChats();
+          return chatCubit;
+        }),
         BlocProvider(create: (context) => BottomNavCubit()),
         BlocProvider(create: (context) => AuthCubit(authRepo: authRepo)),
         BlocProvider(create: (context) {

@@ -17,6 +17,13 @@ class _HomeScreenState extends State<HomeScreen> {
   int? selectedChipIndex = 0;
   final TextEditingController _searchController = TextEditingController();
 
+  @override
+  void initState() {
+    BlocProvider.of<HouseCubit>(context).fetchHouses();
+    // TODO: implement initState
+    super.initState();
+  }
+
   final categories = [
     'All',
     'Apartments',
