@@ -310,6 +310,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        print("submitted");
                         if (_formKey.currentState!.validate()) {
                           houseCubit.addHouse(
                               _titleController.text,

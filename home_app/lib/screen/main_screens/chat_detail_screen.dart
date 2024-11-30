@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/cubits/chat.dart';
+import 'package:home_app/cubits/user.dart';
 import 'package:home_app/model/message_model.dart';
 import 'package:home_app/states/chat_state.dart';
 import 'package:flutter/material.dart';
+import 'package:home_app/states/user_state.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatDetailScreen extends StatefulWidget {
@@ -102,6 +104,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       }
     });
 
+    BlocProvider.of<UserCubit>(context).getProfile();
     super.initState();
   }
 
@@ -115,6 +118,14 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           return true;
         },
         child: BlocConsumer<ChatCubit, ChatState>(listener: (context, state) {
+          if (state is ChatError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
           if (state is SingleChatLoaded) {
             setState(() {
               messages = List.from(state.chat.messages);
@@ -127,6 +138,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               appBar: AppBar(
                 title: Text(chat.users[1].name),
                 centerTitle: true,
+                actions: [
+                  BlocBuilder<UserCubit, UserState>(builder: (context, state) {
+                    if (state is UserLoaded) {
+                      return StarRatingWidget(
+                        rating: state.user.rating,
+                        starSize: 15,
+                      );
+                    }
+
+                    return const CircularProgressIndicator();
+                  })
+                ],
               ),
               body: Column(
                 children: [
@@ -149,8 +172,11 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                           : Alignment.centerLeft,
                                   child: GestureDetector(
                                     onLongPress: () {
-                                      chatCubit.deleteMessage(
-                                          messages[index].id, widget.id);
+                                      if (messages[index].owner ==
+                                          widget.userid) {
+                                        chatCubit.deleteMessage(
+                                            messages[index].id, widget.id);
+                                      }
                                     },
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
@@ -291,6 +317,41 @@ class DoubleCheckIcon extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class StarRatingWidget extends StatelessWidget {
+  final num rating; // The float rating between 0.0 and 5.0
+  final double starSize; // The size of each star
+  final Color filledColor; // Color for filled stars
+  final Color unfilledColor; // Color for unfilled stars
+
+  const StarRatingWidget({
+    Key? key,
+    required this.rating,
+    this.starSize = 24.0,
+    this.filledColor = Colors.yellow,
+    this.unfilledColor = Colors.grey,
+  })  : assert(rating >= 0.0 && rating <= 5.0),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        final starFraction = (rating - index).clamp(0.0, 1.0);
+        return Icon(
+          starFraction == 1.0
+              ? Icons.star // Fully lit star
+              : starFraction > 0.0
+                  ? Icons.star_half // Half-lit star
+                  : Icons.star_border, // Unlit star
+          size: starSize,
+          color: starFraction > 0 ? filledColor : unfilledColor,
+        );
+      }),
     );
   }
 }

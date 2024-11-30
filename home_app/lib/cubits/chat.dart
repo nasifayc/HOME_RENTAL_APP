@@ -19,7 +19,7 @@ class ChatCubit extends Cubit<ChatState> {
     final response = await chatRepo.fetchChat(id);
 
     response.fold((chat) {
-      emit(SingleChatLoaded(chat!));
+      emit(SingleChatLoaded(chat!, ''));
     }, (error) {
       emit(error!);
     });

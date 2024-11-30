@@ -16,7 +16,7 @@ class UserRepository implements IUserRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.get(
-        Uri.parse("$baserURL/auth/profile"),
+        Uri.parse("$baserURL/api/v1/auth/profile"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
@@ -48,7 +48,6 @@ class UserRepository implements IUserRepository {
           return Left(UserError('Failed to refresh access token'));
         }
       }
-
 
       if (response.statusCode == 200) {
         final userJson = jsonDecode(response.body);
