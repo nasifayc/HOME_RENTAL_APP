@@ -14,8 +14,9 @@ class ChatLoaded extends ChatState {
 
 class SingleChatLoaded extends ChatState {
   final Chat chat;
+  final String error;
 
-  SingleChatLoaded(this.chat);
+  SingleChatLoaded(this.chat, this.error);
 }
 
 class ChatError extends ChatState {

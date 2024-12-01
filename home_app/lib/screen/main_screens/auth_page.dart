@@ -16,14 +16,8 @@ class AuthPage extends StatelessWidget {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => LandingPage()));
         });
-      } else if (state is UnAuthenticated) {
-        return const LoginPage();
       }
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const LoginPage();
     });
   }
 }

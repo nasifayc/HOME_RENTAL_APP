@@ -5,15 +5,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/bottom_nav_cubit/bottom_nav_cubit.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart'; // Assuming this is the location of your AuthCubit
+import 'package:home_app/cubits/user.dart';
 import 'package:home_app/screen/main_screens/chat_screen.dart';
 import 'package:home_app/screen/main_screens/home_screen.dart';
 import 'package:home_app/screen/main_screens/post_screen.dart';
 import 'package:home_app/states/auth_state.dart';
+import 'package:home_app/states/user_state.dart';
 import 'package:home_app/widget/landing/left_nav_bar.dart';
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends StatefulWidget {
   LandingPage({super.key});
+
+  @override
+  State<LandingPage> createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    BlocProvider.of<UserCubit>(context).getProfile();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +44,6 @@ class LandingPage extends StatelessWidget {
       child: BlocBuilder<BottomNavCubit, BottomNavState>(
         builder: (context, bottomNavState) {
           final authCubit = BlocProvider.of<AuthCubit>(context);
-          
 
           bool canPost = false; // Default
           if (authCubit.state is Authenticated) {
@@ -103,16 +116,18 @@ class LandingPage extends StatelessWidget {
               ),
               centerTitle: true,
               actions: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    backgroundColor: appTheme.primary.withOpacity(0.1),
-                    child: Icon(
-                      Icons.notifications_none_sharp,
-                      color: appTheme.primary,
-                    ),
-                  ),
-                )
+                BlocBuilder<UserCubit, UserState>(builder: (context, state) {
+                  if (state is UserLoaded) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.yellow,
+                        child: Text(state.user.coins.toString()),
+                      ),
+                    );
+                  }
+                  return const CircularProgressIndicator();
+                })
               ],
             ),
             drawer: const LeftNavBar(),

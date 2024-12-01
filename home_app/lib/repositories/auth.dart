@@ -14,7 +14,7 @@ class AuthRepository implements IAuthRepository {
       String name, String phoneNumber, String password, String role) async {
     try {
       final response = await http.post(
-        Uri.parse('$baserURL/auth/signup'),
+        Uri.parse('$baserURL/api/v1/auth/signup'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "name": name,
@@ -61,7 +61,7 @@ class AuthRepository implements IAuthRepository {
       String phoneNumber, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('$baserURL/auth/login'),
+        Uri.parse('$baserURL/api/v1/auth/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "phoneNumber": phoneNumber,
@@ -104,7 +104,7 @@ class AuthRepository implements IAuthRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.patch(
-        Uri.parse('$baserURL/auth/change-password'),
+        Uri.parse('$baserURL/api/v1/auth/change-password'),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
@@ -117,7 +117,7 @@ class AuthRepository implements IAuthRepository {
 
       if (response.statusCode == 401 || response.statusCode == 403) {
         final refreshResponse = await http.post(
-          Uri.parse("$baserURL/auth/refresh-token"),
+          Uri.parse("$baserURL/api/v1/auth/refresh-token"),
           body: jsonEncode({"token": refreshToken}),
           headers: {"Content-Type": "application/json"},
         );
@@ -177,7 +177,7 @@ class AuthRepository implements IAuthRepository {
 
     try {
       final response = await http.post(
-        Uri.parse('$baserURL/auth/verify-token'),
+        Uri.parse('$baserURL/api/v1/auth/verify-token'),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"

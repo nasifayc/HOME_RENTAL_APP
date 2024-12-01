@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:home_app/utils/api_url.dart';
 
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
@@ -18,35 +19,43 @@ class HouseDetailScreen extends StatefulWidget {
 
 class _HouseDetailScreenState extends State<HouseDetailScreen> {
   String? userid;
+  bool isLoading = true;
 
   @override
   void initState() {
-    getUserId();
     super.initState();
+    getUserId();
   }
 
-  void getUserId() async {
+  Future<void> getUserId() async {
     final pref = await SharedPreferences.getInstance();
     final token = pref.getString("accessToken");
-    try {
-      final parts = token!.split('.');
-      if (parts.length == 3) {
-        final payload =
-            utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
-        final payloadMap =
-            jsonDecode(payload); // Convert payload string to a JSON map
-        final id = payloadMap['id']; // Extract the role
-        userid = id;
-        print(userid);
+
+    if (token != null) {
+      try {
+        final parts = token.split('.');
+        if (parts.length == 3) {
+          final payload =
+              utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+          final payloadMap = jsonDecode(payload); // Convert payload to JSON map
+          setState(() {
+            userid = payloadMap['id']; // Extract user ID from payload
+          });
+        }
+      } catch (e) {
+        print('Error decoding JWT: $e');
       }
-    } catch (e) {
-      print('Error decoding JWT: $e');
     }
+    setState(() {
+      isLoading = false; // Mark loading as complete
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     AppTheme appTheme = AppTheme.of(context);
+    final bool isOwner = userid == widget.house.ownerId;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -56,144 +65,75 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: ListView(
-        children: [
-          // Main image at the top
-          Image.network(
-            "http://192.168.14.212:3000/${widget.house.mainImage}",
-            height: 250,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(height: 16),
-
-          // Title and location
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              widget.house.title,
-              style: const TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
               children: [
-                Icon(
-                  Icons.location_on,
-                  size: 20,
-                  color: Colors.grey[600],
+                // Main image at the top
+                Image.network(
+                  "$baserURL/${widget.house.mainImage}",
+                  height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(width: 5),
-                Expanded(
+                const SizedBox(height: 16),
+
+                // Title and location
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    widget.house.location,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey[600],
+                    widget.house.title,
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+                const SizedBox(height: 8),
+                _buildLocationRow(widget.house.location),
+                const SizedBox(height: 16),
 
-          // Price and Rent status
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Text(
-                  '${widget.house.price} Birr',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
+                // Price and Rent status
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${widget.house.price} Birr',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        widget.house.forRent ? 'For Rent' : 'For Sale',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: widget.house.forRent
+                              ? Colors.orange[600]
+                              : Colors.blue[600],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 16),
-                Text(
-                  widget.house.forRent ? 'For Rent' : 'For Sale',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: widget.house.forRent
-                        ? Colors.orange[600]
-                        : Colors.blue[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
 
-          // Category and Owner ID in a card
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildRow(
-                      Icons.category, 'Category: ${widget.house.category}'),
-                  _buildRow(
-                      Icons.bed, 'Bedrooms: ${widget.house.numberOfBedrooms}'),
-                  _buildRow(Icons.bathtub,
-                      'Bathrooms: ${widget.house.numberOfBathrooms}'),
-                  _buildRow(
-                      Icons.house, 'Floors: ${widget.house.numberOfFloors}'),
-                ],
-              ),
-            ),
-          ),
+                const SizedBox(height: 16),
 
-          const SizedBox(height: 16),
+                // Category and Owner Details in a card
+                _buildHouseDetailsCard(),
 
-          // Description Section
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Description:',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              widget.house.description,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black54,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-          // Gallery Section
-          widget.house.subImages.isEmpty
-              ? const SizedBox()
-              : const Padding(
+                // Description Section
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    'Gallery:',
+                    'Description:',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -201,63 +141,154 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                     ),
                   ),
                 ),
-          const SizedBox(height: 8),
-          widget.house.subImages.isEmpty
-              ? const SizedBox()
-              : Padding(
+                const SizedBox(height: 8),
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: widget.house.subImages.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(widget.house.subImages[index]),
-                          ),
-                        );
-                      },
+                  child: Text(
+                    widget.house.description,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54,
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Gallery Section
+                _buildGallerySection(),
+              ],
+            ),
+      bottomNavigationBar: !isOwner && !isLoading
+          ? _buildBottomNavigation(context)
+          : const SizedBox(),
+    );
+  }
+
+  Widget _buildLocationRow(String location) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          Icon(
+            Icons.location_on,
+            size: 20,
+            color: Colors.grey[600],
+          ),
+          const SizedBox(width: 5),
+          Expanded(
+            child: Text(
+              location,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
         ],
       ),
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+    );
+  }
+
+  Widget _buildHouseDetailsCard() {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildBottomNavItem(
-              context,
-              icon: Icons.phone,
-              label: "Call",
-              onTap: () {
-                // Add call logic here
-              },
-            ),
-            _buildBottomNavItem(
-              context,
-              icon: Icons.message,
-              label: "Message",
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => userid == null
-                          ? const LoginPage()
-                          : ChatDetailScreen(
-                              id: widget.house.ownerId,
-                              userid: userid!,
-                            ),
-                    ));
-              },
-            ),
+            _buildRow(Icons.category, 'Category: ${widget.house.category}'),
+            _buildRow(Icons.bed, 'Bedrooms: ${widget.house.numberOfBedrooms}'),
+            _buildRow(
+                Icons.bathtub, 'Bathrooms: ${widget.house.numberOfBathrooms}'),
+            _buildRow(Icons.house, 'Floors: ${widget.house.numberOfFloors}'),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGallerySection() {
+    if (widget.house.subImages.isEmpty) {
+      return const SizedBox();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'Gallery:',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.house.subImages.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(widget.house.subImages[index]),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomNavigation(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildBottomNavItem(
+            icon: Icons.phone,
+            label: "Call",
+            onTap: () {
+              // Add call logic here
+            },
+          ),
+          _buildBottomNavItem(
+            icon: Icons.message,
+            label: "Message",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => userid == null
+                      ? const LoginPage()
+                      : ChatDetailScreen(
+                          id: widget.house.ownerId,
+                          userid: userid!,
+                        ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -288,8 +319,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     );
   }
 
-  Widget _buildBottomNavItem(
-    BuildContext context, {
+  Widget _buildBottomNavItem({
     required IconData icon,
     required String label,
     required VoidCallback onTap,

@@ -52,6 +52,25 @@ class _ChatScreenState extends State<ChatScreen> {
       child: BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
         if (state is ChatLoaded) {
           final chats = state.chats;
+
+          if (chats.isEmpty) {
+            return const Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.cloud_off,
+                    size: 100,
+                  ),
+                  Text(
+                    "No Chats",
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  )
+                ],
+              ),
+            );
+          }
           return ListView.builder(
             itemCount: chats.length,
             itemBuilder: (context, index) {

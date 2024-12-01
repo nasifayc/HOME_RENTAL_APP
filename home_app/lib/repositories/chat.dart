@@ -18,7 +18,7 @@ class ChatRepository implements IChatRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.get(
-        Uri.parse("$baserURL/chats"),
+        Uri.parse("$baserURL/api/v1/chats"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
@@ -28,7 +28,7 @@ class ChatRepository implements IChatRepository {
       // Handle 401 or 403 to retry fetching with refreshed token
       if (response.statusCode == 401 || response.statusCode == 403) {
         final refreshResponse = await http.post(
-          Uri.parse("$baserURL/auth/refresh-token"),
+          Uri.parse("$baserURL/api/v1/auth/refresh-token"),
           body: jsonEncode({"token": refreshToken}),
           headers: {"Content-Type": "application/json"},
         );
@@ -100,7 +100,7 @@ class ChatRepository implements IChatRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.get(
-        Uri.parse("$baserURL/chats?user=$id"),
+        Uri.parse("$baserURL/api/v1/chats?user=$id"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
@@ -191,7 +191,7 @@ class ChatRepository implements IChatRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.post(
-        Uri.parse("$baserURL/messages"),
+        Uri.parse("$baserURL/api/v1/messages"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
@@ -249,7 +249,7 @@ class ChatRepository implements IChatRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.delete(
-        Uri.parse("$baserURL/messages/$id"),
+        Uri.parse("$baserURL/api/v1/messages/$id"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:dartz/dartz.dart';
 import 'package:home_app/interfaces/house.dart';
@@ -19,7 +20,7 @@ class HouseRepository implements IHouseRepository {
       final refreshToken = prefs.getString("refreshToken") ?? '';
       String accessToken = prefs.getString("accessToken") ?? '';
       var response = await http.get(
-        Uri.parse("$baserURL/houses"),
+        Uri.parse("$baserURL/api/v1/houses"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
@@ -28,7 +29,7 @@ class HouseRepository implements IHouseRepository {
 
       if (response.statusCode == 401 || response.statusCode == 403) {
         final refreshResponse = await http.post(
-          Uri.parse("$baserURL/auth/refresh-token"),
+          Uri.parse("$baserURL/api/v1/auth/refresh-token"),
           body: jsonEncode({"token": refreshToken}),
           headers: {"Content-Type": "application/json"},
         );
@@ -81,12 +82,9 @@ class HouseRepository implements IHouseRepository {
   ) async {
     try {
       var request =
-          http.MultipartRequest('POST', Uri.parse('$baserURL/houses'));
-      request.files.add(await http.MultipartFile.fromPath(
-        'main_image',
-        mainImage.path,
-        contentType: MediaType('image', mainImage.path.split('.').last),
-      ));
+          http.MultipartRequest('POST', Uri.parse('$baserURL/api/v1/houses'));
+      request.files
+          .add(await http.MultipartFile.fromPath('main_image', mainImage.path));
 
       // Add additional form fields
       request.fields['title'] = title;
@@ -131,12 +129,16 @@ class HouseRepository implements IHouseRepository {
         }
       }
 
+      print(response.statusCode);
+
       if (response.statusCode == 201) {
-        return const Left("upload success");
+        return Left("Added Successfully");
       } else {
+        print("failed");
         return Right(HouseError('upload failed'));
       }
     } catch (e) {
+      print(e);
       return Right(HouseError('error occured'));
     }
   }
