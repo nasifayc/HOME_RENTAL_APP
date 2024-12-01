@@ -6,15 +6,17 @@ import 'package:home_app/core/bottom_nav_cubit/bottom_nav_cubit.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart'; // Assuming this is the location of your AuthCubit
 import 'package:home_app/cubits/user.dart';
+import 'package:home_app/screen/layout/shop_coin.dart';
 import 'package:home_app/screen/main_screens/chat_screen.dart';
 import 'package:home_app/screen/main_screens/home_screen.dart';
 import 'package:home_app/screen/main_screens/post_screen.dart';
 import 'package:home_app/states/auth_state.dart';
 import 'package:home_app/states/user_state.dart';
+import 'package:home_app/widget/common/wave_animation.dart';
 import 'package:home_app/widget/landing/left_nav_bar.dart';
 
 class LandingPage extends StatefulWidget {
-  LandingPage({super.key});
+  const LandingPage({super.key});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -132,6 +134,24 @@ class _LandingPageState extends State<LandingPage> {
             ),
             drawer: const LeftNavBar(),
             body: getCurrentScreen(bottomNavState),
+            floatingActionButton: Stack(
+              alignment: Alignment.center,
+              children: [
+                EmittingWave(color: appTheme.primary), // Animated wave
+                FloatingActionButton(
+                  backgroundColor: Colors.blue,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ShopCoin(),
+                      ),
+                    );
+                  },
+                  tooltip: 'Go to Coin Shopping',
+                  child: const Icon(Icons.shopping_cart),
+                ),
+              ],
+            ),
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: states.indexOf(bottomNavState),
               type: BottomNavigationBarType.fixed,
