@@ -56,4 +56,14 @@ class AuthCubit extends Cubit<AuthState> {
       emit(ChangeSuccessState());
     });
   }
+
+  Future<void> checkToken() async {
+    emit(AuthLoading());
+    final response = await authRepo.checkToken();
+    response.fold((error) {
+      emit(UnAuthenticated());
+    }, (success) {
+      emit(Authenticated(authToken: success!));
+    });
+  }
 }

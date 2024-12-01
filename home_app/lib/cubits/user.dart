@@ -6,7 +6,6 @@ class UserCubit extends Cubit<UserState> {
   final IUserRepository userRepo;
   UserCubit({required this.userRepo}) : super(UserInitial());
   void getProfile() async {
-    emit(UserLoading());
     final response = await userRepo.fetchProfile();
     response.fold((error) {
       emit(UserError(error!.message));

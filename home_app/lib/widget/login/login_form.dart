@@ -176,7 +176,7 @@ class _LoginFormState extends State<LoginForm> {
                         color: theme.primary,
                         child: state is AuthLoading
                             ? const CircularProgressIndicator(
-                                color: Colors.white,
+                                color: Colors.black,
                               )
                             : Text(
                                 'Login',

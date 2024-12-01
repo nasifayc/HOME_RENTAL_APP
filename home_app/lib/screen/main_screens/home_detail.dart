@@ -1,11 +1,48 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/model/house_model.dart';
+import 'package:home_app/screen/layout/sign_up_page.dart';
+import 'package:home_app/screen/main_screens/chat_detail_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HouseDetailScreen extends StatelessWidget {
+class HouseDetailScreen extends StatefulWidget {
   final HouseModel house;
 
-  const HouseDetailScreen({Key? key, required this.house}) : super(key: key);
+  const HouseDetailScreen({super.key, required this.house});
+
+  @override
+  State<HouseDetailScreen> createState() => _HouseDetailScreenState();
+}
+
+class _HouseDetailScreenState extends State<HouseDetailScreen> {
+  String? userid;
+
+  @override
+  void initState() {
+    getUserId();
+    super.initState();
+  }
+
+  void getUserId() async {
+    final pref = await SharedPreferences.getInstance();
+    final token = pref.getString("accessToken");
+    try {
+      final parts = token!.split('.');
+      if (parts.length == 3) {
+        final payload =
+            utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+        final payloadMap =
+            jsonDecode(payload); // Convert payload string to a JSON map
+        final id = payloadMap['id']; // Extract the role
+        userid = id;
+        print(userid);
+      }
+    } catch (e) {
+      print('Error decoding JWT: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +60,7 @@ class HouseDetailScreen extends StatelessWidget {
         children: [
           // Main image at the top
           Image.network(
-            "http://10.5.193.51:3000/${house.mainImage}",
+            "http://192.168.14.212:3000/${widget.house.mainImage}",
             height: 250,
             width: double.infinity,
             fit: BoxFit.cover,
@@ -34,7 +71,7 @@ class HouseDetailScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              house.title,
+              widget.house.title,
               style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -55,7 +92,7 @@ class HouseDetailScreen extends StatelessWidget {
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    house.location,
+                    widget.house.location,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -74,7 +111,7 @@ class HouseDetailScreen extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '${house.price} Birr',
+                  '${widget.house.price} Birr',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -83,12 +120,13 @@ class HouseDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  house.forRent ? 'For Rent' : 'For Sale',
+                  widget.house.forRent ? 'For Rent' : 'For Sale',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color:
-                        house.forRent ? Colors.orange[600] : Colors.blue[600],
+                    color: widget.house.forRent
+                        ? Colors.orange[600]
+                        : Colors.blue[600],
                   ),
                 ),
               ],
@@ -108,11 +146,14 @@ class HouseDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow(Icons.category, 'Category: ${house.category}'),
-                  _buildRow(Icons.bed, 'Bedrooms: ${house.numberOfBedrooms}'),
                   _buildRow(
-                      Icons.bathtub, 'Bathrooms: ${house.numberOfBathrooms}'),
-                  _buildRow(Icons.house, 'Floors: ${house.numberOfFloors}'),
+                      Icons.category, 'Category: ${widget.house.category}'),
+                  _buildRow(
+                      Icons.bed, 'Bedrooms: ${widget.house.numberOfBedrooms}'),
+                  _buildRow(Icons.bathtub,
+                      'Bathrooms: ${widget.house.numberOfBathrooms}'),
+                  _buildRow(
+                      Icons.house, 'Floors: ${widget.house.numberOfFloors}'),
                 ],
               ),
             ),
@@ -136,7 +177,7 @@ class HouseDetailScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              house.description,
+              widget.house.description,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
@@ -147,7 +188,7 @@ class HouseDetailScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Gallery Section
-          house.subImages.isEmpty
+          widget.house.subImages.isEmpty
               ? const SizedBox()
               : const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -161,7 +202,7 @@ class HouseDetailScreen extends StatelessWidget {
                   ),
                 ),
           const SizedBox(height: 8),
-          house.subImages.isEmpty
+          widget.house.subImages.isEmpty
               ? const SizedBox()
               : Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -169,13 +210,13 @@ class HouseDetailScreen extends StatelessWidget {
                     height: 200,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: house.subImages.length,
+                      itemCount: widget.house.subImages.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(house.subImages[index]),
+                            child: Image.network(widget.house.subImages[index]),
                           ),
                         );
                       },
@@ -203,7 +244,16 @@ class HouseDetailScreen extends StatelessWidget {
               icon: Icons.message,
               label: "Message",
               onTap: () {
-                // Add message logic here
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => userid == null
+                          ? const LoginPage()
+                          : ChatDetailScreen(
+                              id: widget.house.ownerId,
+                              userid: userid!,
+                            ),
+                    ));
               },
             ),
           ],

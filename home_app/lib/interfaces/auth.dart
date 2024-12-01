@@ -9,4 +9,5 @@ abstract class IAuthRepository {
       String phoneNumber, String password);
   Future<Either<AuthError?, String?>> changePassword(
       String oldPassword, String newPassword);
+  Future<Either<AuthError?, AuthToken?>> checkToken();
 }

@@ -17,3 +17,5 @@ class HouseError extends HouseState {
 
   HouseError(this.message);
 }
+
+class HouseAdded extends HouseState {}

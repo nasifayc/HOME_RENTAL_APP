@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:home_app/interfaces/house.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/states/house_state.dart';
 import 'package:home_app/utils/api_url.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -14,16 +16,42 @@ class HouseRepository implements IHouseRepository {
   Future<Either<List<HouseModel>?, HouseError?>> fetchHouses() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final _ = prefs.getString("refreshToken") ?? '';
-      final accessToken = prefs.getString("accessToken") ?? '';
-      final response = await http.get(
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.get(
         Uri.parse("$baserURL/houses"),
         headers: {
           "Authorization": "Bearer $accessToken",
           "Content-Type": "application/json"
         },
       );
-      print(response.statusCode);
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.get(
+            Uri.parse("$baserURL/houses"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+          );
+        } else {
+          return Right(HouseError('Failed to refresh access token'));
+        }
+      }
+
       if (response.statusCode == 200) {
         List<dynamic> houseJson = jsonDecode(response.body);
         return Left(
@@ -38,29 +66,27 @@ class HouseRepository implements IHouseRepository {
   }
 
   @override
-  Future<Either<List<HouseModel>?, HouseError?>> addHouse(
-      String title,
-      String location,
-      String description,
-      num price,
-      String category,
-      num bedrooms,
-      num bathrooms,
-      num floors,
-      bool forRent,
-      XFile mainImage,
-      List<XFile> subImages) async {
+  Future<Either<String?, HouseError?>> addHouse(
+    String title,
+    String location,
+    String description,
+    num price,
+    String category,
+    num bedrooms,
+    num bathrooms,
+    num floors,
+    bool forRent,
+    File mainImage,
+    List<XFile> subImages,
+  ) async {
     try {
-      var uri = Uri.parse("$baserURL/houses");
-
-      // Create the multipart request
-      var request = http.MultipartRequest('POST', uri);
-
-      // Add the file to the request
-      var file = await http.MultipartFile.fromPath(
+      var request =
+          http.MultipartRequest('POST', Uri.parse('$baserURL/houses'));
+      request.files.add(await http.MultipartFile.fromPath(
         'main_image',
         mainImage.path,
-      );
+        contentType: MediaType('image', mainImage.path.split('.').last),
+      ));
 
       // Add additional form fields
       request.fields['title'] = title;
@@ -71,36 +97,47 @@ class HouseRepository implements IHouseRepository {
       request.fields["number_of_bedrooms"] = bedrooms.toString();
       request.fields["number_of_bathrooms"] = bathrooms.toString();
       request.fields["number_of_floors"] = floors.toString();
-      request.fields["for_Rent"] = forRent ? "true" : "false";
-
-      // Add the file to the request
-      request.files.add(file);
+      request.fields["for_rent"] = forRent ? "true" : "false";
 
       // Get access token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString("accessToken");
+      String accessToken = prefs.getString("accessToken") ?? '';
+      final refreshToken = prefs.getString("accessToken");
 
-      // Ensure the access token is not null
-      if (accessToken != null && accessToken.isNotEmpty) {
-        // Add authorization header with the access token
-        request.headers['Authorization'] = 'Bearer $accessToken';
-      } else {
-        print('Access token is missing or invalid.');
-      }
+      request.headers['Authorization'] = 'Bearer $accessToken';
 
       // Send the request
       var response = await request.send();
 
-      // Handle response
-      if (response.statusCode == 200) {
-        print('Upload successful');
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          request.headers['Authorization'] = 'Bearer $accessToken';
+
+          response = await request.send();
+        } else {
+          return Right(HouseError('Failed to refresh access token'));
+        }
+      }
+
+      if (response.statusCode == 201) {
+        return const Left("upload success");
       } else {
-        print('Upload failed: ${response.statusCode}');
+        return Right(HouseError('upload failed'));
       }
     } catch (e) {
-      print('Error occurred: $e');
+      return Right(HouseError('error occured'));
     }
-
-    return Right(HouseError(''));
   }
 }

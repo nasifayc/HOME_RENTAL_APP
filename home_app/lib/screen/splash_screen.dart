@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/cubits/auth.dart';
+import 'package:home_app/screen/main_screens/auth_page.dart';
 import 'package:home_app/screen/onboarding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,14 +15,35 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+    authCubit.checkToken();
     super.initState();
-
-    Future.delayed(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Onboarding()),
-      );
+    // Delay for 5 seconds and navigate to the next screen
+    Future.delayed(const Duration(seconds: 5), () async {
+      bool visited = await _getSharedPref();
+      if (!visited) {
+        await _visit();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Onboarding()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AuthPage()),
+        );
+      }
     });
+  }
+
+  Future<bool> _getSharedPref() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("hasVisited") ?? false;
+  }
+
+  Future<void> _visit() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("hasVisited", true);
   }
 
   @override

@@ -17,6 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int? selectedChipIndex = 0;
   final TextEditingController _searchController = TextEditingController();
 
+  @override
+  void initState() {
+    BlocProvider.of<HouseCubit>(context).fetchHouses();
+    super.initState();
+  }
+
   final categories = [
     'All',
     'Apartments',
@@ -26,12 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
     'Penthouses',
     'Duplexes',
   ];
-
-  @override
-  void initState() {
-    BlocProvider.of<HouseCubit>(context).fetchHouses();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +152,7 @@ class CategoryChips extends StatelessWidget {
         children: List<Widget>.generate(categories.length, (int index) {
           final isSelected = selectedIndex == index;
           return GestureDetector(
-            onTap: () => onChipSelected(isSelected ? null : index),
+            onTap: () => onChipSelected(index),
             child: Container(
               margin: const EdgeInsets.only(right: 10),
               padding:
