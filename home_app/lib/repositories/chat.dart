@@ -53,8 +53,6 @@ class ChatRepository implements IChatRepository {
         }
       }
 
-      print(response.body);
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         List<Chat> chats = [];

@@ -126,8 +126,6 @@ class HouseRepository implements IHouseRepository {
         }
       }
 
-      print(response.statusCode);
-
       if (response.statusCode == 201) {
         return Left("Added Successfully");
       } else {
