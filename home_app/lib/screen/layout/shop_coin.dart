@@ -6,7 +6,6 @@ class ShopCoin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define the data for coin packages
     final List<Map<String, dynamic>> coinPackages = [
       {'coins': 1, 'price': 1},
       {'coins': 10, 'price': 7},
@@ -32,15 +31,14 @@ class ShopCoin extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             elevation: 4,
             child: ListTile(
-              // Dynamically render stacked coin icons based on the coin amount
               leading: SizedBox(
-                width: 40, // Fixed width for the stack container
+                width: 40,
                 child: Stack(
                   children: List.generate(
                     (package['coins'] / 50).clamp(1, 6).toInt(),
                     (i) => Positioned(
-                      bottom: i * 2, // Offset each icon slightly downwards
-                      left: i * 1.03, // Offset slightly to the right
+                      bottom: i * 2,
+                      left: i * 1.03,
                       child: const Icon(
                         Icons.monetization_on_outlined,
                         color: Colors.amber,
@@ -58,7 +56,6 @@ class ShopCoin extends StatelessWidget {
                   style: theme.typography.bodyMedium),
               trailing: ElevatedButton(
                 onPressed: () {
-                  // Handle buy action here
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
