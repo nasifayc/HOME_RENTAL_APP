@@ -33,11 +33,7 @@ class MyApp extends StatelessWidget {
     final chatRepo = ChatRepository();
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) {
-          final chatCubit = ChatCubit(chatRepo: chatRepo);
-          chatCubit.fetchChats();
-          return chatCubit;
-        }),
+        BlocProvider(create: (context) => ChatCubit(chatRepo: chatRepo)),
         BlocProvider(create: (context) => BottomNavCubit()),
         BlocProvider(create: (context) => AuthCubit(authRepo: authRepo)),
         BlocProvider(create: (context) {
@@ -46,11 +42,7 @@ class MyApp extends StatelessWidget {
           return houseCubit;
         }),
         BlocProvider(create: (context) => ThemeCubit()),
-        BlocProvider(create: (context) {
-          final userCubit = UserCubit(userRepo: userRepo);
-          userCubit.getProfile();
-          return userCubit;
-        })
+        BlocProvider(create: (context) => UserCubit(userRepo: userRepo))
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, state) {

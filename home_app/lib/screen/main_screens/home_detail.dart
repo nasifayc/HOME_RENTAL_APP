@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:home_app/utils/api_url.dart';
+import 'package:home_app/core/api_url.dart';
 
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';

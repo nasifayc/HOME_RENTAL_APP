@@ -104,17 +104,18 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       }
     });
 
-    BlocProvider.of<UserCubit>(context).getProfile();
+    BlocProvider.of<UserCubit>(context).fetchRate(widget.id);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final chatCubit = BlocProvider.of<ChatCubit>(context);
-
+    final userCubit = BlocProvider.of<UserCubit>(context);
     return WillPopScope(
         onWillPop: () async {
           chatCubit.fetchChats();
+          userCubit.getProfile();
           return true;
         },
         child: BlocConsumer<ChatCubit, ChatState>(listener: (context, state) {
@@ -136,14 +137,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             final chat = state.chat;
             return Scaffold(
               appBar: AppBar(
-                title: Text(chat.users[1].name),
+                title: Text(chat.users[1].id == widget.id
+                    ? chat.users[1].name
+                    : chat.users[0].name),
                 centerTitle: true,
                 actions: [
-                  BlocBuilder<UserCubit, UserState>(builder: (context, state) {
-                    if (state is UserLoaded) {
-                      return StarRatingWidget(
-                        rating: state.user.rating,
-                        starSize: 15,
+                  BlocConsumer<UserCubit, UserState>(
+                      listener: (context, state) {
+                    if (state is UserError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }, builder: (context, state) {
+                    if (state is RateLoaded) {
+                      return GestureDetector(
+                        onTap: () => _showRatingDialog(
+                            context, state.rate, userCubit, widget.id),
+                        child: StarRatingWidget(
+                          rating: state.rate,
+                          starSize: 15,
+                        ),
                       );
                     }
 
@@ -354,4 +371,42 @@ class StarRatingWidget extends StatelessWidget {
       }),
     );
   }
+}
+
+void _showRatingDialog(
+    BuildContext context, num initialRating, UserCubit userCubit, String id) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Rate User"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Select a rating below:"),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(5, (index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    userCubit.rate(index + 1, id);
+                  },
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.blue,
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

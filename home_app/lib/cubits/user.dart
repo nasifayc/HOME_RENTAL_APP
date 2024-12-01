@@ -13,4 +13,22 @@ class UserCubit extends Cubit<UserState> {
       emit(UserLoaded(user!));
     });
   }
+
+  void fetchRate(String id) async {
+    final response = await userRepo.fetchRate(id);
+    response.fold((error) {
+      emit(UserError(error!.message));
+    }, (rate) {
+      emit(rate!);
+    });
+  }
+
+  void rate(num amount, String id) async {
+    final response = await userRepo.rateUser(amount, id);
+    response.fold((error) {
+      emit(UserError(error!.message));
+    }, (user) {
+      fetchRate(id);
+    });
+  }
 }

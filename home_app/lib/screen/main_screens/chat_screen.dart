@@ -97,12 +97,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   leading: CircleAvatar(
                     backgroundColor: Colors.teal,
                     child: Text(
-                      chats[index].users[1].name[0].toUpperCase(),
+                      userid == chats[index].users[1].id
+                          ? chats[index].users[0].name[0].toUpperCase()
+                          : chats[index].users[1].name[0].toUpperCase(),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   title: Text(
-                    chats[index].users[1].name,
+                    userid == chats[index].users[1].id
+                        ? chats[index].users[0].name
+                        : chats[index].users[1].name,
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.w600),
                   ),

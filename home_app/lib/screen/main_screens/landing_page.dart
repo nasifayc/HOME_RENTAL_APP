@@ -128,7 +128,10 @@ class _LandingPageState extends State<LandingPage> {
                       ),
                     );
                   }
-                  return const CircularProgressIndicator();
+                  return const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator());
                 })
               ],
             ),

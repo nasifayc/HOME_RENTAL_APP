@@ -6,7 +6,7 @@ import 'package:home_app/model/chat_model.dart';
 import 'package:home_app/model/message_model.dart';
 import 'package:home_app/model/user_model.dart';
 import 'package:home_app/states/chat_state.dart';
-import 'package:home_app/utils/api_url.dart';
+import 'package:home_app/core/api_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -53,7 +53,7 @@ class ChatRepository implements IChatRepository {
         }
       }
 
-      print(response.statusCode);
+      print(response.body);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
