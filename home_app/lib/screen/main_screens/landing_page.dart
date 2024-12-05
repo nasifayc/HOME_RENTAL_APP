@@ -139,7 +139,7 @@ class _LandingPageState extends State<LandingPage> {
               children: [
                 EmittingWave(color: appTheme.primary), // Animated wave
                 FloatingActionButton(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: appTheme.primaryBackground,
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -148,7 +148,10 @@ class _LandingPageState extends State<LandingPage> {
                     );
                   },
                   tooltip: 'Go to Coin Shopping',
-                  child: const Icon(Icons.shopping_cart),
+                  child: Icon(
+                    Icons.shopping_cart,
+                    color: appTheme.primary,
+                  ),
                 ),
               ],
             ),
