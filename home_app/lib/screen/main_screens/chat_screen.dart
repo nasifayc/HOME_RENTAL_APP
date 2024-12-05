@@ -44,15 +44,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void clearChat(String chatId) {
-    print('Clearing chat with ID: $chatId');
-    // You can call a method from your ChatCubit to handle clearing chat messages.
-    // BlocProvider.of<ChatCubit>(context).clearChat(chatId);
-  }
-
   @override
   Widget build(BuildContext context) {
-    print(userid);
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return Container(
       child: BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
         if (state is ChatLoaded) {
@@ -111,7 +105,10 @@ class _ChatScreenState extends State<ChatScreen> {
                               title: const Text('Clear Chat Message'),
                               onTap: () {
                                 Navigator.pop(context);
-                                clearChat(chats[index].id);
+                                chatCubit.clearChat(
+                                    chats[index].users[0].id == userid
+                                        ? chats[index].users[1].id
+                                        : chats[index].users[0].id, chats);
                               },
                             ),
                           ],

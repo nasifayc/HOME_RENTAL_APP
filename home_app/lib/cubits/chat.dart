@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/interfaces/chat.dart';
 import 'package:home_app/states/chat_state.dart';
+import 'package:home_app/model/chat_model.dart';
 
 class ChatCubit extends Cubit<ChatState> {
   final IChatRepository chatRepo;
@@ -25,23 +26,31 @@ class ChatCubit extends Cubit<ChatState> {
     });
   }
 
-  Future<void> addMessage(String content, String recipientId) async {
+  Future<void> addMessage(String content, String recipientId, Chat chat) async {
     final response = await chatRepo.addChat(content, recipientId);
 
     response.fold((chat) {
       fetchChat(recipientId);
     }, (error) {
-      emit(error!);
+      emit(SingleChatLoaded(chat, error!.message));
     });
   }
 
-  Future<void> deleteMessage(String id, String recipientId) async {
+  Future<void> deleteMessage(String id, String recipientId, Chat chat) async {
     final response = await chatRepo.deleteMessage(id);
-    print(response);
     response.fold((chat) {
       fetchChat(recipientId);
     }, (error) {
-      emit(error!);
+      emit(SingleChatLoaded(chat, ''));
+    });
+  }
+
+  Future<void> clearChat(String id, List<Chat> chats) async {
+    final response = await chatRepo.clearChat(id);
+    response.fold((chat) {
+      fetchChats();
+    }, (error) {
+      emit(ChatLoaded(chats));
     });
   }
 }

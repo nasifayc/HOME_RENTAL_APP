@@ -289,4 +289,56 @@ class ChatRepository implements IChatRepository {
       return Right(ChatError('error fetching messages'));
     }
   }
+
+  @override
+  Future<Either<String?, ChatError?>> clearChat(String id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.delete(
+        Uri.parse("$baserURL/api/v1/chats?user=$id"),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Content-Type": "application/json"
+        },
+      );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.delete(
+            Uri.parse("$baserURL/api/v1/chats?user=$id"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+          );
+        } else {
+          return Right(ChatError('Failed to refresh access token'));
+        }
+      }
+
+      print(response.statusCode);
+
+      if (response.statusCode == 204) {
+        return const Left("okay");
+      }
+
+      return Right(ChatError('error deleting chat'));
+    } catch (e) {
+      return Right(ChatError('error deleting chat'));
+    }
+  }
 }

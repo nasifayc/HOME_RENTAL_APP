@@ -7,6 +7,7 @@ import 'package:home_app/states/chat_state.dart';
 import 'package:flutter/material.dart';
 import 'package:home_app/states/user_state.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:home_app/model/chat_model.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String id;
@@ -31,8 +32,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  void sendMessage(ChatCubit chatCubit, String recipientId) {
-    chatCubit.addMessage(_messageController.text, recipientId);
+  void sendMessage(ChatCubit chatCubit, String recipientId, Chat chat) {
+    chatCubit.addMessage(_messageController.text, recipientId, chat);
     _messageController.clear();
   }
 
@@ -120,13 +121,15 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           return true;
         },
         child: BlocConsumer<ChatCubit, ChatState>(listener: (context, state) {
-          if (state is ChatError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+          if (state is SingleChatLoaded) {
+            if (state.error != '') {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           }
           if (state is SingleChatLoaded) {
             setState(() {
@@ -189,7 +192,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                           ? Alignment.centerRight
                                           : Alignment.centerLeft,
                                   child: GestureDetector(
-                                    onLongPress: () {
+                                    onTap: () {
                                       if (messages[index].owner ==
                                           widget.userid) {
                                         // Show options to Update or Delete the message
@@ -229,7 +232,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                                         context); // Close the modal
                                                     chatCubit.deleteMessage(
                                                         messages[index].id,
-                                                        widget.id);
+                                                        widget.id,
+                                                        chat);
                                                   },
                                                 ),
                                               ],
@@ -331,7 +335,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                 chatCubit,
                                 widget.id != state.chat.users[0].id
                                     ? state.chat.users[1].id
-                                    : state.chat.users[0].id);
+                                    : state.chat.users[0].id,
+                                chat);
                             _scrollController.animateTo(
                               _scrollController.position.extentAfter,
                               duration: const Duration(milliseconds: 100),
