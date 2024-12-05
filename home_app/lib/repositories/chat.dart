@@ -83,11 +83,9 @@ class ChatRepository implements IChatRepository {
         return Left(chats);
       }
 
-      return Right(
-          ChatError('Error fetching messages: ${response.statusCode}'));
+      return Right(ChatError('Error fetching messages: ${response.body}'));
     } catch (e) {
-      print(e);
-      return Right(ChatError('Error fetching messages'));
+      return Right(ChatError('Network Error'));
     }
   }
 
@@ -329,9 +327,6 @@ class ChatRepository implements IChatRepository {
           return Right(ChatError('Failed to refresh access token'));
         }
       }
-
-      print(response.statusCode);
-
       if (response.statusCode == 204) {
         return const Left("okay");
       }

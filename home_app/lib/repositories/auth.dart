@@ -24,6 +24,8 @@ class AuthRepository implements IAuthRepository {
         }),
       );
 
+      print(response.statusCode);
+
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         final prefs = await SharedPreferences.getInstance();
@@ -48,6 +50,7 @@ class AuthRepository implements IAuthRepository {
             "",
             roleError.toString()));
       } else {
+        print(response.statusCode);
         return Left(AuthError("", "", "", "server error", ''));
       }
     } catch (e) {
