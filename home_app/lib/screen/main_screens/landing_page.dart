@@ -122,13 +122,30 @@ class _LandingPageState extends State<LandingPage> {
                   if (state is UserLoaded) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.yellow,
-                        child: Text(state.user.coins.toString()),
+                      child: Column(
+                        children: [
+                          const Expanded(
+                            child: Icon(
+                              Icons.monetization_on_outlined,
+                              color: Colors.amber,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Expanded(child: Text(state.user.coins.toString()))
+                        ],
                       ),
                     );
                   }
-                  return const CircularProgressIndicator();
+                  return const Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: SizedBox(
+                        width: 30,
+                        height: 20,
+                        child: Center(child: CircularProgressIndicator())),
+                  );
                 })
               ],
             ),

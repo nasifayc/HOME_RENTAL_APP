@@ -16,7 +16,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   List<String> messages = [];
-  String? selectedUser; // Currently selected user to chat with
+  String? selectedUser;
   String? userid;
 
   @override
@@ -34,15 +34,20 @@ class _ChatScreenState extends State<ChatScreen> {
       if (parts.length == 3) {
         final payload =
             utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
-        final payloadMap =
-            jsonDecode(payload); // Convert payload string to a JSON map
-        final id = payloadMap['id']; // Extract the role
+        final payloadMap = jsonDecode(payload);
+        final id = payloadMap['id'];
         userid = id;
         print(userid);
       }
     } catch (e) {
       print('Error decoding JWT: $e');
     }
+  }
+
+  void clearChat(String chatId) {
+    print('Clearing chat with ID: $chatId');
+    // You can call a method from your ChatCubit to handle clearing chat messages.
+    // BlocProvider.of<ChatCubit>(context).clearChat(chatId);
   }
 
   @override
@@ -94,15 +99,39 @@ class _ChatScreenState extends State<ChatScreen> {
                                   )
                                 : const LoginPage()));
                   },
+                  onLongPress: () {
+                    showModalBottomSheet(
+                      backgroundColor: Colors.red,
+                      context: context,
+                      builder: (_) {
+                        return Wrap(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.delete),
+                              title: const Text('Clear Chat Message'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                clearChat(chats[index].id);
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   leading: CircleAvatar(
                     backgroundColor: Colors.teal,
                     child: Text(
-                      chats[index].users[1].name[0].toUpperCase(),
+                      userid == chats[index].users[1].id
+                          ? chats[index].users[0].name[0].toUpperCase()
+                          : chats[index].users[1].name[0].toUpperCase(),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   title: Text(
-                    chats[index].users[1].name,
+                    userid == chats[index].users[1].id
+                        ? chats[index].users[0].name
+                        : chats[index].users[1].name,
                     style: const TextStyle(
                         fontSize: 18, fontWeight: FontWeight.w600),
                   ),

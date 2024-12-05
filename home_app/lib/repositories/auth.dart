@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:home_app/interfaces/auth.dart';
 import 'package:home_app/model/token_model.dart';
 import 'package:home_app/states/auth_state.dart';
-import 'package:home_app/utils/api_url.dart';
+import 'package:home_app/core/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 

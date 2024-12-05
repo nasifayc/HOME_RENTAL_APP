@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/chat.dart';
 import 'package:home_app/cubits/user.dart';
 import 'package:home_app/model/message_model.dart';
@@ -28,8 +29,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController =
-      ScrollController(); // Step 1: Create ScrollController
+  final ScrollController _scrollController = ScrollController();
 
   void sendMessage(ChatCubit chatCubit, String recipientId) {
     chatCubit.addMessage(_messageController.text, recipientId);
@@ -104,17 +104,19 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
       }
     });
 
-    BlocProvider.of<UserCubit>(context).getProfile();
+    BlocProvider.of<UserCubit>(context).fetchRate(widget.id);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    AppTheme theme = AppTheme.of(context);
     final chatCubit = BlocProvider.of<ChatCubit>(context);
-
+    final userCubit = BlocProvider.of<UserCubit>(context);
     return WillPopScope(
         onWillPop: () async {
           chatCubit.fetchChats();
+          userCubit.getProfile();
           return true;
         },
         child: BlocConsumer<ChatCubit, ChatState>(listener: (context, state) {
@@ -136,14 +138,30 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             final chat = state.chat;
             return Scaffold(
               appBar: AppBar(
-                title: Text(chat.users[1].name),
+                title: Text(chat.users[1].id == widget.id
+                    ? chat.users[1].name
+                    : chat.users[0].name),
                 centerTitle: true,
                 actions: [
-                  BlocBuilder<UserCubit, UserState>(builder: (context, state) {
-                    if (state is UserLoaded) {
-                      return StarRatingWidget(
-                        rating: state.user.rating,
-                        starSize: 15,
+                  BlocConsumer<UserCubit, UserState>(
+                      listener: (context, state) {
+                    if (state is UserError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }, builder: (context, state) {
+                    if (state is RateLoaded) {
+                      return GestureDetector(
+                        onTap: () => _showRatingDialog(
+                            context, state.rate, userCubit, widget.id),
+                        child: StarRatingWidget(
+                          rating: state.rate,
+                          starSize: 15,
+                        ),
                       );
                     }
 
@@ -174,8 +192,50 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                     onLongPress: () {
                                       if (messages[index].owner ==
                                           widget.userid) {
-                                        chatCubit.deleteMessage(
-                                            messages[index].id, widget.id);
+                                        // Show options to Update or Delete the message
+                                        showModalBottomSheet(
+                                          backgroundColor: theme.primary,
+                                          context: context,
+                                          builder: (context) {
+                                            return Wrap(
+                                              children: [
+                                                ListTile(
+                                                  leading: Icon(
+                                                    Icons.edit,
+                                                    color: theme.secondary,
+                                                  ),
+                                                  title: Text(
+                                                    'Update Message',
+                                                    style: theme
+                                                        .typography.labelMedium,
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    // _showUpdateDialog(messages[index]); // Call update dialog
+                                                  },
+                                                ),
+                                                ListTile(
+                                                  leading: Icon(
+                                                    Icons.delete,
+                                                    color: theme.secondary,
+                                                  ),
+                                                  title: Text(
+                                                    'Delete Message',
+                                                    style: theme
+                                                        .typography.labelMedium,
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.pop(
+                                                        context); // Close the modal
+                                                    chatCubit.deleteMessage(
+                                                        messages[index].id,
+                                                        widget.id);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       }
                                     },
                                     child: Container(
@@ -354,4 +414,42 @@ class StarRatingWidget extends StatelessWidget {
       }),
     );
   }
+}
+
+void _showRatingDialog(
+    BuildContext context, num initialRating, UserCubit userCubit, String id) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Rate User"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Select a rating below:"),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(5, (index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    userCubit.rate(index + 1, id);
+                  },
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.blue,
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

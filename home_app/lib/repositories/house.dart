@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:url_launcher/url_launcher.dart';
-
 import 'package:dartz/dartz.dart';
 import 'package:home_app/interfaces/house.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/states/house_state.dart';
-import 'package:home_app/utils/api_url.dart';
-import 'package:http_parser/http_parser.dart';
+import 'package:home_app/core/api_url.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -128,8 +125,6 @@ class HouseRepository implements IHouseRepository {
           return Right(HouseError('Failed to refresh access token'));
         }
       }
-
-      print(response.statusCode);
 
       if (response.statusCode == 201) {
         return Left("Added Successfully");

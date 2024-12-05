@@ -12,6 +12,11 @@ class UserLoaded extends UserState {
   UserLoaded(this.user);
 }
 
+class RateLoaded extends UserState {
+  num rate;
+  RateLoaded({required this.rate});
+}
+
 class UserError extends UserState {
   final String message;
 

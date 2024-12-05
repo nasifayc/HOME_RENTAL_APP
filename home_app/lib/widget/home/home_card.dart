@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/screen/main_screens/home_detail.dart';
-import 'package:home_app/utils/api_url.dart';
+import 'package:home_app/core/api_url.dart';
 
 class HomeCard extends StatelessWidget {
   final HouseModel house;
