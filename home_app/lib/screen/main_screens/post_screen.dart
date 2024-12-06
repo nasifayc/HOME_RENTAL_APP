@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_number_picker/flutter_number_picker.dart';
+import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/house.dart';
 import 'package:home_app/states/house_state.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,6 +49,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppTheme theme = AppTheme.of(context);
     final _ = BlocProvider.of<HouseCubit>(context);
     final categories = [
       'Apartments',
@@ -189,6 +191,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                     children: [
                       Expanded(
                         child: _buildNumberPicker(
+                          theme: theme,
                           label: "Bedrooms",
                           value: _bedrooms.toInt(),
                           onChanged: (value) =>
@@ -197,6 +200,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       ),
                       Expanded(
                         child: _buildNumberPicker(
+                          theme: theme,
                           label: "Bathrooms",
                           value: _bathrooms.toInt(),
                           onChanged: (value) =>
@@ -205,6 +209,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       ),
                       Expanded(
                         child: _buildNumberPicker(
+                          theme: theme,
                           label: "Floors",
                           value: _floors.toInt(),
                           onChanged: (value) =>
@@ -218,7 +223,10 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
 
                   // For Rent Toggle
                   ListTile(
-                    title: const Text("For Rent"),
+                    title: Text(
+                      "For Rent",
+                      style: theme.typography.titleMedium,
+                    ),
                     trailing: Switch(
                       trackColor: const WidgetStatePropertyAll(Colors.black),
                       thumbColor: const WidgetStatePropertyAll(Colors.white),
@@ -233,7 +241,10 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   const SizedBox(height: 16),
 
                   // Image Picker
-                  const Text("Main Image"),
+                  Text(
+                    "Main Image",
+                    style: theme.typography.titleMedium,
+                  ),
                   GestureDetector(
                     onTap: _pickMainImage,
                     child: Container(
@@ -246,7 +257,8 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       ),
                       child: _mainImage == null
                           ? const Center(
-                              child: Icon(Icons.add_a_photo, size: 40))
+                              child: Icon(Icons.add_a_photo,
+                                  size: 40, color: Colors.black))
                           : Image.file(
                               File(_mainImage!.path),
                               fit: BoxFit.cover,
@@ -261,13 +273,9 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             "Sub Images",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                            style: theme.typography.titleMedium,
                           ),
                           GestureDetector(
                             onTap: _pickSubImages,
@@ -285,7 +293,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.add_photo_alternate,
-                                        color: Colors.grey),
+                                        color: Colors.black),
                                   ],
                                 ),
                               ),
@@ -299,7 +307,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                       const SizedBox(height: 16),
 
                       // Sub Images Preview
-                      _buildSubImagesPreview(),
+                      _buildSubImagesPreview(theme: theme),
                     ],
                   ),
 
@@ -350,34 +358,36 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   }
 
 // Replace this method:
-  Widget _buildNumberPicker({
-    required String label,
-    required int value,
-    required Function(int) onChanged,
-  }) {
+  Widget _buildNumberPicker(
+      {required String label,
+      required int value,
+      required Function(int) onChanged,
+      required AppTheme theme}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "$label: $value",
-          style: const TextStyle(color: Colors.black, fontSize: 15),
+          style: theme.typography.bodySmall,
         ),
         CustomNumberPicker(
           initialValue: value,
           maxValue: 10,
           minValue: 1,
           step: 1,
-          valueTextStyle:
-              const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          valueTextStyle: theme.typography.bodySmall,
           onValue: (num newValue) => onChanged(newValue as int),
         ),
       ],
     );
   }
 
-  Widget _buildSubImagesPreview() {
+  Widget _buildSubImagesPreview({required AppTheme theme}) {
     return _subImages.isEmpty
-        ? const Text("No sub images selected")
+        ? Text(
+            "No sub images selected",
+            style: theme.typography.bodySmall,
+          )
         : SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(

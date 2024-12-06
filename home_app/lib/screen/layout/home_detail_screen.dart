@@ -50,10 +50,7 @@ class HomeDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       houseModel.title,
-                      style: theme.typography.headlineMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                      style: theme.typography.titleLarge,
                     ),
                     SizedBox(height: 8),
                     Text(

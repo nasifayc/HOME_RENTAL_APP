@@ -83,11 +83,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     widget.house.title,
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: appTheme.typography.headlineMedium,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -130,15 +126,11 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                 const SizedBox(height: 16),
 
                 // Description Section
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     'Description:',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: appTheme.typography.titleMedium,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -146,11 +138,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     widget.house.description,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black54,
-                    ),
+                    style: appTheme.typography.bodySmall,
                   ),
                 ),
                 const SizedBox(height: 16),

@@ -17,7 +17,6 @@ import 'package:home_app/screen/layout/otp_screen.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/main_screens/about.dart';
 import 'package:home_app/screen/main_screens/help_and_support.dart';
-import 'package:home_app/screen/main_screens/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
