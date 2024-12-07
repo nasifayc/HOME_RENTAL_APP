@@ -36,6 +36,17 @@ class ChatCubit extends Cubit<ChatState> {
     });
   }
 
+  Future<void> updateMessage(
+      String content, String id, String recipientId, Chat chat) async {
+    final response = await chatRepo.updateMessage(content, id);
+
+    response.fold((chat) {
+      fetchChat(recipientId);
+    }, (error) {
+      emit(SingleChatLoaded(chat, error!.message));
+    });
+  }
+
   Future<void> deleteMessage(String id, String recipientId, Chat chat) async {
     final response = await chatRepo.deleteMessage(id);
     response.fold((chat) {

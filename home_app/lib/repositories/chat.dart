@@ -239,6 +239,67 @@ class ChatRepository implements IChatRepository {
   }
 
   @override
+  Future<Either<String?, ChatError?>> updateMessage(
+      String content, String id) async {
+    try {
+      print(id);
+      final prefs = await SharedPreferences.getInstance();
+      final refreshToken = prefs.getString("refreshToken") ?? '';
+      String accessToken = prefs.getString("accessToken") ?? '';
+      var response = await http.patch(
+        Uri.parse("$baserURL/api/v1/messages/$id"),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({
+          "content": content,
+        }),
+      );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.patch(
+            Uri.parse("$baserURL/api/v1/messages/$id"),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+              "Content-Type": "application/json"
+            },
+            body: jsonEncode({
+              "content": content,
+            }),
+          );
+        } else {
+          return Right(ChatError('Failed to refresh access token'));
+        }
+      }
+
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        return const Left('');
+      }
+
+      return Right(ChatError('error updating messages'));
+    } catch (e) {
+      print(e);
+      return Right(ChatError('error updating messages'));
+    }
+  }
+
+  @override
   Future<Either<String?, ChatError?>> deleteMessage(String id) async {
     try {
       final prefs = await SharedPreferences.getInstance();

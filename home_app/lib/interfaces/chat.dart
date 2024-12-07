@@ -9,4 +9,5 @@ abstract class IChatRepository {
       String content, String recipientId);
   Future<Either<String?, ChatError?>> deleteMessage(String id);
   Future<Either<String?, ChatError?>> clearChat(String id);
+  Future<Either<String?, ChatError?>> updateMessage(String content, String id);
 }

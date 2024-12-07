@@ -111,7 +111,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   void _showUpdateDialog(BuildContext context, Message message,
-      ChatCubit chatCubit, String chatId, AppTheme theme) {
+      ChatCubit chatCubit, Chat chat, AppTheme theme) {
     final TextEditingController updateController = TextEditingController();
     updateController.text = message.content;
 
@@ -137,7 +137,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               onPressed: () {
                 final updatedContent = updateController.text.trim();
                 if (updatedContent.isNotEmpty) {
-                  // chatCubit.updateMessage(message.id, chatId, updatedContent);
+                  chatCubit.updateMessage(
+                      updatedContent, message.id, widget.id, chat);
                 }
                 Navigator.of(context).pop();
               },
@@ -235,7 +236,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                           : Alignment.centerLeft,
                                   child: GestureDetector(
                                     onTap: () {
-                                      if (messages[index].owner ==
+                                      if (chat.messages[index].owner ==
                                           widget.userid) {
                                         // Show options to Update or Delete the message
                                         showModalBottomSheet(
@@ -260,7 +261,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                                         context,
                                                         messages[index],
                                                         chatCubit,
-                                                        chat.id,
+                                                        chat,
                                                         theme);
                                                     // _showUpdateDialog(messages[index]); // Call update dialog
                                                   },
