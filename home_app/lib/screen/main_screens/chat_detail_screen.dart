@@ -174,7 +174,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           }
           if (state is SingleChatLoaded) {
             setState(() {
-              messages = List.from(state.chat.messages);
+              messages = List.from(state.chat.messages)
+                ..sort((a, b) => a.time.compareTo(b.time));
             });
           }
         }, builder: (context, state) {
