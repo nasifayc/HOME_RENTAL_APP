@@ -109,11 +109,51 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     super.initState();
   }
 
+  void _showUpdateDialog(BuildContext context, Message message,
+      ChatCubit chatCubit, String chatId, AppTheme theme) {
+    final TextEditingController updateController = TextEditingController();
+    updateController.text = message.content;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: theme.primaryBackground,
+          title: const Text("Update Message"),
+          content: TextField(
+            controller: updateController,
+            decoration: const InputDecoration(hintText: "Edit your message"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                "Cancel",
+                style: theme.typography.labelSmall,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final updatedContent = updateController.text.trim();
+                if (updatedContent.isNotEmpty) {
+                  // chatCubit.updateMessage(message.id, chatId, updatedContent);
+                }
+                Navigator.of(context).pop();
+              },
+              child: Text("Update", style: theme.typography.labelSmall),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     AppTheme theme = AppTheme.of(context);
     final chatCubit = BlocProvider.of<ChatCubit>(context);
     final userCubit = BlocProvider.of<UserCubit>(context);
+
     return WillPopScope(
         onWillPop: () async {
           chatCubit.fetchChats();
@@ -214,6 +254,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                                   ),
                                                   onTap: () {
                                                     Navigator.pop(context);
+                                                    _showUpdateDialog(
+                                                        context,
+                                                        messages[index],
+                                                        chatCubit,
+                                                        chat.id,
+                                                        theme);
                                                     // _showUpdateDialog(messages[index]); // Call update dialog
                                                   },
                                                 ),
