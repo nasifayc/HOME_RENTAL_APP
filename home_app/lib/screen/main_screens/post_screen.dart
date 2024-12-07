@@ -27,7 +27,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
   double _floors = 1;
 
   File? _mainImage;
-  List<XFile> _subImages = [];
+  List<File> _subImages = [];
 
   Future<void> _pickMainImage() async {
     final picker = ImagePicker();
@@ -40,11 +40,14 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
 
   Future<void> _pickSubImages() async {
     final picker = ImagePicker();
-    final images = await picker.pickMultiImage();
+    final List<XFile>? images = await picker.pickMultiImage();
 
-    setState(() {
-      _subImages.addAll(images);
-    });
+    if (images != null) {
+      setState(() {
+        // Convert each XFile to File and add to _subImages
+        _subImages.addAll(images.map((xfile) => File(xfile.path)));
+      });
+    }
   }
 
   @override
@@ -316,37 +319,42 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   // Submit Button
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        print("submitted");
-                        if (_formKey.currentState!.validate()) {
-                          houseCubit.addHouse(
-                              _titleController.text,
-                              _locationController.text,
-                              _descriptionController.text,
-                              num.parse(_priceController.text),
-                              _selectedCategory!,
-                              _bedrooms,
-                              _bathrooms,
-                              _floors,
-                              _forRent,
-                              _mainImage!,
-                              _subImages.map((image) => image).toList());
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    child: BlocBuilder<HouseCubit, HouseState>(
+                        builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          print("submitted");
+                          if (_formKey.currentState!.validate()) {
+                            houseCubit.addHouse(
+                                _titleController.text,
+                                _locationController.text,
+                                _descriptionController.text,
+                                num.parse(_priceController.text),
+                                _selectedCategory!,
+                                _bedrooms,
+                                _bathrooms,
+                                _floors,
+                                _forRent,
+                                _mainImage!,
+                                _subImages.map((image) => image).toList());
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          textStyle: const TextStyle(fontSize: 16),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        textStyle: const TextStyle(fontSize: 16),
-                      ),
-                      child: const Text(
-                        "Submit",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                        child: state is! HouseLoading
+                            ? const Text(
+                                "Submit",
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : const CircularProgressIndicator(),
+                      );
+                    }),
                   ),
                 ],
               ),

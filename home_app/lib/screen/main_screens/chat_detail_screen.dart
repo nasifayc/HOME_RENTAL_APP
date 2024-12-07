@@ -295,10 +295,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                           horizontal: 12, vertical: 6),
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color:
-                                            widget.id != messages[index].owner
-                                                ? Colors.teal
-                                                : Colors.blueGrey[200],
+                                        color: widget.id !=
+                                                chat.messages[index].owner
+                                            ? Colors.teal
+                                            : Colors.blueGrey[200],
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: ConstrainedBox(

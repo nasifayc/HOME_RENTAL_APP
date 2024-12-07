@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/interfaces/house.dart';
 import 'package:home_app/states/house_state.dart';
-import 'package:image_picker/image_picker.dart';
 
 class HouseCubit extends Cubit<HouseState> {
   final IHouseRepository houseRepo;
@@ -28,7 +27,8 @@ class HouseCubit extends Cubit<HouseState> {
       num floors,
       bool forRent,
       File mainImage,
-      List<XFile> subImages) async {
+      List<File> subImages) async {
+    emit(HouseLoading());
     final response = await houseRepo.addHouse(
         title,
         location,

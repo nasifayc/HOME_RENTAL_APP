@@ -5,7 +5,6 @@ import 'package:home_app/interfaces/house.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/states/house_state.dart';
 import 'package:home_app/core/api_url.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -75,13 +74,19 @@ class HouseRepository implements IHouseRepository {
     num floors,
     bool forRent,
     File mainImage,
-    List<XFile> subImages,
+    List<File> subImages,
   ) async {
     try {
       var request =
           http.MultipartRequest('POST', Uri.parse('$baserURL/api/v1/houses'));
       request.files
           .add(await http.MultipartFile.fromPath('main_image', mainImage.path));
+      final subImagePaths = subImages.map((image) => image.path);
+
+      for (final path in subImagePaths) {
+        request.files
+            .add(await http.MultipartFile.fromPath('sub_images', path));
+      }
 
       // Add additional form fields
       request.fields['title'] = title;
@@ -93,6 +98,8 @@ class HouseRepository implements IHouseRepository {
       request.fields["number_of_bathrooms"] = bathrooms.toString();
       request.fields["number_of_floors"] = floors.toString();
       request.fields["for_rent"] = forRent ? "true" : "false";
+
+      print(request.files);
 
       // Get access token from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
@@ -110,6 +117,10 @@ class HouseRepository implements IHouseRepository {
           body: jsonEncode({"token": refreshToken}),
           headers: {"Content-Type": "application/json"},
         );
+        for (final path in subImagePaths) {
+          request.files
+              .add(await http.MultipartFile.fromPath('sub_images', path));
+        }
 
         if (refreshResponse.statusCode == 201) {
           final data = jsonDecode(refreshResponse.body);
@@ -125,6 +136,8 @@ class HouseRepository implements IHouseRepository {
           return Right(HouseError('Failed to refresh access token'));
         }
       }
+
+      print(response.statusCode);
 
       if (response.statusCode == 201) {
         return Left("Added Successfully");

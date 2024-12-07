@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/states/house_state.dart';
-import 'package:image_picker/image_picker.dart';
 
 abstract class IHouseRepository {
   Future<Either<List<HouseModel>?, HouseError?>> fetchHouses();
@@ -18,5 +17,5 @@ abstract class IHouseRepository {
       num floors,
       bool forRent,
       File mainIMage,
-      List<XFile> subImages);
+      List<File> subImages);
 }

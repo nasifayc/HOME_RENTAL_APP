@@ -234,7 +234,8 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(widget.house.subImages[index]),
+                    child: Image.network(
+                        '$baserURL/${widget.house.subImages[index]}'),
                   ),
                 );
               },

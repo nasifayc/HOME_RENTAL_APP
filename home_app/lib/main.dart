@@ -36,11 +36,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ChatCubit(chatRepo: chatRepo)),
         BlocProvider(create: (context) => BottomNavCubit()),
         BlocProvider(create: (context) => AuthCubit(authRepo: authRepo)),
-        BlocProvider(create: (context) {
-          final houseCubit = HouseCubit(houseRepo: houseRepo);
-          houseCubit.fetchHouses();
-          return houseCubit;
-        }),
+        BlocProvider(create: (context) => HouseCubit(houseRepo: houseRepo)),
         BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) => UserCubit(userRepo: userRepo))
       ],
