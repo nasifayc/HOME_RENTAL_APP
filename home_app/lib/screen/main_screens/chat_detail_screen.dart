@@ -38,6 +38,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   }
 
   String extractHourMinuteAmPm(String dateTime) {
+    print(dateTime);
     // Parse the ISO 8601 string into a DateTime object
     DateTime parsedDate = DateTime.parse(dateTime);
 
@@ -48,7 +49,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
     // Convert to 12-hour format for display
     hour = hour % 12;
-    hour = hour == 0 ? 12 : hour; // Adjust for midnight (0 becomes 12)
+    hour = hour + 3 == 0 ? 12 : hour + 3; // Adjust for midnight (0 becomes 12)
 
     // Format as a string (e.g., "5:38 PM")
     return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period';
