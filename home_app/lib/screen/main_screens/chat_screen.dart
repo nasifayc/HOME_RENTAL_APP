@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/cubits/chat.dart';
+import 'package:home_app/model/chat_model.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/main_screens/chat_detail_screen.dart';
 import 'package:home_app/states/chat_state.dart';
@@ -50,7 +51,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       child: BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
         if (state is ChatLoaded) {
-          final chats = state.chats;
+          List<Chat> chats = List.from(state.chats)
+            ..sort((a, b) => b.lastUpdatedTime.compareTo(a.lastUpdatedTime));
 
           if (chats.isEmpty) {
             return const Center(
@@ -108,7 +110,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 chatCubit.clearChat(
                                     chats[index].users[0].id == userid
                                         ? chats[index].users[1].id
-                                        : chats[index].users[0].id, chats);
+                                        : chats[index].users[0].id,
+                                    chats);
                               },
                             ),
                           ],
