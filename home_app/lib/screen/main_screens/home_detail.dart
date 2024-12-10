@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:home_app/core/api_url.dart';
-
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/model/house_model.dart';
@@ -253,13 +251,6 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildBottomNavItem(
-            icon: Icons.phone,
-            label: "Call",
-            onTap: () {
-              // Add call logic here
-            },
-          ),
           _buildBottomNavItem(
             icon: Icons.message,
             label: "Message",

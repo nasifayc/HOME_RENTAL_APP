@@ -77,11 +77,11 @@ class _ChatScreenState extends State<ChatScreen> {
             itemBuilder: (context, index) {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                elevation: 3,
+                elevation: 5,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: ListTile(
+                child: InkWell(
                   onTap: () {
                     Navigator.push(
                         context,
@@ -97,14 +97,22 @@ class _ChatScreenState extends State<ChatScreen> {
                   },
                   onLongPress: () {
                     showModalBottomSheet(
-                      backgroundColor: Colors.red,
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
                       context: context,
                       builder: (_) {
                         return Wrap(
                           children: [
                             ListTile(
-                              leading: const Icon(Icons.delete),
-                              title: const Text('Clear Chat Message'),
+                              leading:
+                                  const Icon(Icons.delete, color: Colors.red),
+                              title: const Text(
+                                'Clear Chat Message',
+                                style: TextStyle(color: Colors.black),
+                              ),
                               onTap: () {
                                 Navigator.pop(context);
                                 chatCubit.clearChat(
@@ -119,21 +127,56 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                     );
                   },
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.teal,
-                    child: Text(
-                      userid == chats[index].users[1].id
-                          ? chats[index].users[0].name[0].toUpperCase()
-                          : chats[index].users[1].name[0].toUpperCase(),
-                      style: const TextStyle(color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        // User Avatar
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.teal,
+                          child: Text(
+                            userid == chats[index].users[1].id
+                                ? chats[index].users[0].name[0].toUpperCase()
+                                : chats[index].users[1].name[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        // User Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userid == chats[index].users[1].id
+                                    ? chats[index].users[0].name
+                                    : chats[index].users[1].name,
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Tap to view details',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios,
+                            color: Colors.grey, size: 20),
+                      ],
                     ),
-                  ),
-                  title: Text(
-                    userid == chats[index].users[1].id
-                        ? chats[index].users[0].name
-                        : chats[index].users[1].name,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ),
               );
