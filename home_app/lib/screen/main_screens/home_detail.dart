@@ -71,7 +71,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
               children: [
                 // Main image at the top
                 Image.network(
-                  "$baserURL/${widget.house.mainImage}",
+                  widget.house.mainImage,
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -231,13 +231,13 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
               itemCount: widget.house.subImages.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                        '$baserURL/${widget.house.subImages[index]}'),
-                  ),
-                );
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        widget.house.subImages[index],
+                      ),
+                    ));
               },
             ),
           ),

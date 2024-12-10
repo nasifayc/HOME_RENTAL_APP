@@ -97,7 +97,7 @@ class _LeftNavBarState extends State<LeftNavBar> {
                       color: theme.primaryText,
                     ),
                     title: Text(
-                      state == ThemeMode.dark ? 'Light Mode' : 'Dark Mode',
+                      state == ThemeMode.dark ? 'Dark Mode' : 'Light Mode',
                       style: theme.typography.bodySmall,
                     ),
                     trailing: Switch(
@@ -149,19 +149,6 @@ class _LeftNavBarState extends State<LeftNavBar> {
               ),
               ListTile(
                 leading: Icon(
-                  Icons.description_outlined,
-                  color: theme.primaryText,
-                ),
-                title: Text(
-                  'Terms and Conditions',
-                  style: theme.typography.bodySmall,
-                ),
-                onTap: () {
-                  // Add navigation logic
-                },
-              ),
-              ListTile(
-                leading: Icon(
                   Icons.info,
                   color: theme.primaryText,
                 ),
@@ -191,19 +178,6 @@ class _LeftNavBarState extends State<LeftNavBar> {
                     ),
                     (route) => false,
                   );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text(
-                  'Delete Account',
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal),
-                ),
-                onTap: () {
-                  // Add account deletion logic here
                 },
               ),
             ],

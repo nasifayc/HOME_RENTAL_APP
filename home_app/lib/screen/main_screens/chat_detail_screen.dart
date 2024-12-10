@@ -176,7 +176,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           if (state is SingleChatLoaded) {
             setState(() {
               messages = List.from(state.chat.messages)
-                ..sort((a, b) => a.time.compareTo(b.time));
+                ..sort((a, b) => a.id.compareTo(b.id)); // Descending by ID
             });
           }
         }, builder: (context, state) {
@@ -230,13 +230,12 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                               itemCount: messages.length,
                               itemBuilder: (context, index) {
                                 return Align(
-                                  alignment:
-                                      widget.id == chat.messages[index].owner
-                                          ? Alignment.centerRight
-                                          : Alignment.centerLeft,
+                                  alignment: widget.id == messages[index].owner
+                                      ? Alignment.centerRight
+                                      : Alignment.centerLeft,
                                   child: GestureDetector(
                                     onTap: () {
-                                      if (chat.messages[index].owner ==
+                                      if (messages[index].owner ==
                                           widget.userid) {
                                         // Show options to Update or Delete the message
                                         showModalBottomSheet(
@@ -296,10 +295,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                           horizontal: 12, vertical: 6),
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: widget.id !=
-                                                chat.messages[index].owner
-                                            ? Colors.teal
-                                            : Colors.blueGrey[200],
+                                        color:
+                                            widget.id != messages[index].owner
+                                                ? Colors.teal
+                                                : Colors.blueGrey[200],
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: ConstrainedBox(
@@ -314,7 +313,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                               Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
-                                                  chat.messages[index].content,
+                                                  messages[index].content,
                                                   style: const TextStyle(
                                                     fontSize: 16,
                                                     color: Colors.white,
@@ -330,8 +329,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
-                                                    extractHourMinuteAmPm(chat
-                                                        .messages[index].time),
+                                                    extractHourMinuteAmPm(
+                                                        messages[index].time),
                                                     style: const TextStyle(
                                                       fontSize: 10,
                                                       fontWeight:

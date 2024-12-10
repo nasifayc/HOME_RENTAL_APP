@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, state) {
+          BlocProvider.of<ThemeCubit>(context).loadTheme();
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'ebook store',

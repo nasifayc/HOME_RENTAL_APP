@@ -72,6 +72,8 @@ class AuthRepository implements IAuthRepository {
         }),
       );
 
+      print('$baserURL/api/v1/auth/login');
+
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         final prefs = await SharedPreferences.getInstance();
