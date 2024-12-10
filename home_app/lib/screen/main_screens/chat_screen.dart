@@ -20,6 +20,24 @@ class _ChatScreenState extends State<ChatScreen> {
   String? selectedUser;
   String? userid;
 
+  String extractHourMinuteAmPm(String dateTime) {
+    print(dateTime);
+    // Parse the ISO 8601 string into a DateTime object
+    DateTime parsedDate = DateTime.parse(dateTime);
+
+    // Extract hour, minute, and determine AM/PM
+    int hour = parsedDate.hour;
+    int minute = parsedDate.minute;
+    String period = hour >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format for display
+    hour = hour % 12;
+    hour = hour + 3 == 0 ? 12 : hour + 3; // Adjust for midnight (0 becomes 12)
+
+    // Format as a string (e.g., "5:38 PM")
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period';
+  }
+
   @override
   void initState() {
     BlocProvider.of<ChatCubit>(context).fetchChats();
@@ -84,16 +102,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => userid != null
-                                ? ChatDetailScreen(
-                                    id: userid == chats[index].users[1].id
-                                        ? chats[index].users[0].id
-                                        : chats[index].users[1].id,
-                                    userid: userid!,
-                                  )
-                                : const LoginPage()));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => userid != null
+                            ? ChatDetailScreen(
+                                id: userid == chats[index].users[1].id
+                                    ? chats[index].users[0].id
+                                    : chats[index].users[1].id,
+                                userid: userid!,
+                              )
+                            : const LoginPage(),
+                      ),
+                    );
                   },
                   onLongPress: () {
                     showModalBottomSheet(
@@ -116,10 +136,11 @@ class _ChatScreenState extends State<ChatScreen> {
                               onTap: () {
                                 Navigator.pop(context);
                                 chatCubit.clearChat(
-                                    chats[index].users[0].id == userid
-                                        ? chats[index].users[1].id
-                                        : chats[index].users[0].id,
-                                    chats);
+                                  chats[index].users[0].id == userid
+                                      ? chats[index].users[1].id
+                                      : chats[index].users[0].id,
+                                  chats,
+                                );
                               },
                             ),
                           ],
@@ -163,11 +184,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ),
                               ),
                               const SizedBox(height: 5),
+
+                              // Last Updated Time
                               Text(
-                                'Tap to view details',
+                                extractHourMinuteAmPm(
+                                    chats[index].lastUpdatedTime),
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
+                                  fontSize: 12,
+                                  color: Colors.grey.shade500,
                                 ),
                               ),
                             ],
