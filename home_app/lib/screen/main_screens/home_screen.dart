@@ -123,7 +123,7 @@ class SearchBar extends StatelessWidget {
         ),
         hintText: "Search",
         hintStyle: TextStyle(color: Colors.grey.shade700),
-        prefixIcon: const Icon(Icons.search),
+        prefixIcon: Icon(Icons.search, color: Colors.grey.shade700),
         filled: true,
         fillColor: const Color.fromARGB(255, 241, 241, 241),
       ),
