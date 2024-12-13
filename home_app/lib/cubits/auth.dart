@@ -22,12 +22,11 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> signup(
-      String phoneNumber, String password, String name, String role) async {
+  Future<void> signup(String phoneNumber, String password, String name) async {
     emit(AuthLoading());
 
     try {
-      final response = await authRepo.signUp(name, phoneNumber, password, role);
+      final response = await authRepo.signUp(name, phoneNumber, password);
       response.fold((error) {
         emit(error!);
       }, (token) {

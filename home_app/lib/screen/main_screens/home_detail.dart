@@ -213,17 +213,14 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
           child: Text(
             'Gallery:',
             style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
         ),
         const SizedBox(height: 8),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
           child: SizedBox(
-            height: 200,
+            height: 150,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: widget.house.subImages.length,

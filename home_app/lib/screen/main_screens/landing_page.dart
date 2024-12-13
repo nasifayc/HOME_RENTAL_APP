@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/bottom_nav_cubit/bottom_nav_cubit.dart';
@@ -43,145 +41,128 @@ class _LandingPageState extends State<LandingPage> {
           },
         ),
       ],
-      child: BlocBuilder<BottomNavCubit, BottomNavState>(
-        builder: (context, bottomNavState) {
-          final authCubit = BlocProvider.of<AuthCubit>(context);
-
-          bool canPost = false; // Default
-          if (authCubit.state is Authenticated) {
-            final token = (authCubit.state as Authenticated)
-                .authToken
-                .accessToken; // Assume token is available
-            try {
-              final parts = token.split('.');
-              if (parts.length == 3) {
-                final payload = utf8
-                    .decode(base64Url.decode(base64Url.normalize(parts[1])));
-                final payloadMap =
-                    jsonDecode(payload); // Convert payload string to a JSON map
-                final role = payloadMap['role']; // Extract the role
-                canPost = role != 'Buyer'; // Set canPost based on the role
-              }
-            } catch (e) {
-              // Handle decoding errors
-              print('Error decoding JWT: $e');
-            }
+      child: BlocBuilder<UserCubit, UserState>(
+        builder: (context, userState) {
+          bool canPost = false;
+          if (userState is UserLoaded) {
+            canPost = userState.user.role == "Seller";
           }
 
-          List<BottomNavigationBarItem> buildNavItems(bool canPost) {
-            final items = [
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-              ),
-              if (canPost)
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.upload_rounded),
-                  label: 'Post',
-                ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.message),
-                label: 'Chat',
-              ),
-            ];
-            return items;
-          }
-
-          List<BottomNavState> availableStates(bool canPost) {
-            final states = [
-              BottomNavState.home,
-              if (canPost) BottomNavState.post,
-              BottomNavState.chat,
-            ];
-            return states;
-          }
-
-          final navItems = buildNavItems(canPost);
-          final states = availableStates(canPost);
-
-          return Scaffold(
-            key: _scaffoldKey,
-            appBar: AppBar(
-              elevation: 1,
-              leading: GestureDetector(
-                onTap: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                child: Icon(
-                  Icons.widgets_outlined,
-                  color: appTheme.primary,
-                ),
-              ),
-              title: Text(
-                getTitle(bottomNavState),
-                style: appTheme.typography.headlineSmall,
-              ),
-              centerTitle: true,
-              actions: [
-                BlocBuilder<UserCubit, UserState>(builder: (context, state) {
-                  if (state is UserLoaded) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          const Expanded(
-                            child: Icon(
-                              Icons.monetization_on_outlined,
-                              color: Colors.amber,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Expanded(child: Text(state.user.coins.toString()))
-                        ],
-                      ),
-                    );
-                  }
-                  return const Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: SizedBox(
-                        width: 30,
-                        height: 20,
-                        child: Center(child: CircularProgressIndicator())),
-                  );
-                })
-              ],
-            ),
-            drawer: const LeftNavBar(),
-            body: getCurrentScreen(bottomNavState),
-            floatingActionButton: Stack(
-              alignment: Alignment.center,
-              children: [
-                EmittingWave(color: appTheme.primary), // Animated wave
-                FloatingActionButton(
-                  backgroundColor: appTheme.primaryBackground,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const ShopCoin(),
-                      ),
-                    );
-                  },
-                  tooltip: 'Go to Coin Shopping',
-                  child: Icon(
-                    Icons.shopping_cart,
-                    color: appTheme.primary,
+          return BlocBuilder<BottomNavCubit, BottomNavState>(
+            builder: (context, bottomNavState) {
+              List<BottomNavigationBarItem> buildNavItems() {
+                return [
+                  const BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
                   ),
+                  if (canPost)
+                    const BottomNavigationBarItem(
+                      icon: Icon(Icons.upload_rounded),
+                      label: 'Post',
+                    ),
+                  const BottomNavigationBarItem(
+                    icon: Icon(Icons.message),
+                    label: 'Chat',
+                  ),
+                ];
+              }
+
+              List<BottomNavState> availableStates() {
+                return [
+                  BottomNavState.home,
+                  if (canPost) BottomNavState.post,
+                  BottomNavState.chat,
+                ];
+              }
+
+              final navItems = buildNavItems();
+              final states = availableStates();
+
+              return Scaffold(
+                key: _scaffoldKey,
+                appBar: AppBar(
+                  elevation: 1,
+                  leading: GestureDetector(
+                    onTap: () {
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
+                    child: Icon(
+                      Icons.widgets_outlined,
+                      color: appTheme.primary,
+                    ),
+                  ),
+                  title: Text(
+                    getTitle(bottomNavState),
+                    style: appTheme.typography.headlineSmall,
+                  ),
+                  centerTitle: true,
+                  actions: [
+                    if (userState is UserLoaded)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            const Expanded(
+                              child: Icon(
+                                Icons.monetization_on_outlined,
+                                color: Colors.amber,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Expanded(
+                              child: Text(userState.user.coins.toString()),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: SizedBox(
+                          width: 30,
+                          height: 20,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
+                  ],
                 ),
-              ],
-            ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: states.indexOf(bottomNavState),
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: appTheme.primary,
-              unselectedItemColor: Colors.grey,
-              items: navItems,
-              onTap: (index) {
-                context.read<BottomNavCubit>().selectItem(states[index]);
-              },
-            ),
+                drawer: const LeftNavBar(),
+                body: getCurrentScreen(bottomNavState),
+                floatingActionButton: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    EmittingWave(color: appTheme.primary), // Animated wave
+                    FloatingActionButton(
+                      backgroundColor: appTheme.primaryBackground,
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ShopCoin(),
+                          ),
+                        );
+                      },
+                      tooltip: 'Go to Coin Shopping',
+                      child: Icon(
+                        Icons.shopping_cart,
+                        color: appTheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                bottomNavigationBar: BottomNavigationBar(
+                  currentIndex: states.indexOf(bottomNavState),
+                  type: BottomNavigationBarType.fixed,
+                  selectedItemColor: appTheme.primary,
+                  unselectedItemColor: Colors.grey,
+                  items: navItems,
+                  onTap: (index) {
+                    context.read<BottomNavCubit>().selectItem(states[index]);
+                  },
+                ),
+              );
+            },
           );
         },
       ),

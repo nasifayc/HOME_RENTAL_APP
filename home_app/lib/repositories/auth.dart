@@ -5,20 +5,20 @@ import 'package:home_app/interfaces/auth.dart';
 import 'package:home_app/model/token_model.dart';
 import 'package:home_app/states/auth_state.dart';
 import 'package:home_app/core/api_url.dart';
+import 'package:home_app/states/user_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository implements IAuthRepository {
   @override
   Future<Either<AuthError?, AuthToken?>> signUp(
-      String name, String phoneNumber, String password, String role) async {
+      String name, String phoneNumber, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baserURL/api/v1/auth/signup'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "name": name,
-          "role": role,
           "phoneNumber": phoneNumber,
           "password": password,
         }),
@@ -206,6 +206,55 @@ class AuthRepository implements IAuthRepository {
     } catch (e) {
       print(e);
       return Left(AuthError("", "", "", "", ""));
+    }
+  }
+
+  @override
+  Future<Either<UserError?, String?>> changeStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString("refreshToken") ?? '';
+    var accessToken = prefs.getString("accessToken") ?? '';
+
+    try {
+      var response = await http.patch(
+        Uri.parse('$baserURL/api/v1/auth/change-status'),
+        headers: {
+          "Authorization": "Bearer $accessToken",
+        },
+      );
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final refreshResponse = await http.post(
+          Uri.parse("$baserURL/auth/refresh-token"),
+          body: jsonEncode({"token": refreshToken}),
+          headers: {"Content-Type": "application/json"},
+        );
+
+        if (refreshResponse.statusCode == 201) {
+          final data = jsonDecode(refreshResponse.body);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("accessToken", data["access_token"]);
+          await prefs.setString("refreshToken", data["refresh_token"]);
+          accessToken = prefs.getString("accessToken") ?? '';
+
+          response = await http.patch(
+            Uri.parse('$baserURL/api/v1/auth/change-status'),
+            headers: {
+              "Authorization": "Bearer $accessToken",
+            },
+          );
+        } else {
+          return Left(UserError('Failed to refresh access token'));
+        }
+      }
+
+      if (response.statusCode == 200) {
+        return Right('User changed status successfully');
+      } else {
+        return Left(UserError("Error occured updating status"));
+      }
+    } catch (e) {
+      return Left(UserError("Network Error"));
     }
   }
 }

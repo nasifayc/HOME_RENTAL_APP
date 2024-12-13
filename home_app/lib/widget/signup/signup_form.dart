@@ -5,8 +5,6 @@ import 'package:home_app/cubits/auth.dart';
 import 'package:home_app/screen/main_screens/landing_page.dart';
 import 'package:home_app/states/auth_state.dart';
 import 'package:home_app/widget/common/form_components.dart';
-import 'package:home_app/widget/common/google_auth_button.dart';
-import 'package:home_app/widget/common/or_divider.dart';
 import 'package:home_app/widget/common/primary_button.dart';
 
 class SignupForm extends StatefulWidget {
@@ -187,128 +185,37 @@ class _SignupFormState extends State<SignupForm> {
                           ),
                         )
                       : const SizedBox(),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Choose your role:",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      DropdownButtonFormField<String>(
-                        value: selectedRole,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 16.0),
-                        ),
-                        hint: const Text("Select Role"),
-                        items: const [
-                          DropdownMenuItem(
-                            value: "Buyer",
-                            child: Text("Buyer"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Seller",
-                            child: Text("Seller"),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selectedRole = value; // Store the selected value
-                          });
-                        },
-                      ),
-                      roleError != ''
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 6,
-                                  ),
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        roleError,
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Color.fromARGB(
-                                                255, 204, 43, 31)),
-                                      )),
-                                ],
-                              ),
-                            )
-                          : const SizedBox(),
-                      state is AuthError && state.role != ''
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 6,
-                                  ),
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        state.role,
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Color.fromARGB(
-                                                255, 204, 43, 31)),
-                                      )),
-                                ],
-                              ),
-                            )
-                          : const SizedBox(),
-                      state is AuthError && state.server != ''
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 6,
-                                  ),
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        state.server,
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Color.fromARGB(
-                                                255, 204, 43, 31)),
-                                      )),
-                                ],
-                              ),
-                            )
-                          : const SizedBox(),
-                      const SizedBox(height: 20),
-                    ],
+                  const SizedBox(
+                    height: 20,
                   ),
+                  state is AuthError && state.server != ''
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    state.server,
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        color:
+                                            Color.fromARGB(255, 204, 43, 31)),
+                                  )),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(),
+                  const SizedBox(height: 20),
                   PrimaryButton(
                       onPressed: () {
-                        setState(() {
-                          roleError = '';
-                        });
                         if (_formKey.currentState?.validate() ?? false) {
-                          if (selectedRole == null) {
-                            setState(() {
-                              roleError = 'Please select role';
-                            });
-                            return;
-                          }
-
-                          authCubit.signup(
-                              _phoneController.text,
-                              _passwordController.text,
-                              _nameController.text,
-                              selectedRole!);
+                          authCubit.signup(_phoneController.text,
+                              _passwordController.text, _nameController.text);
                         }
                       },
                       color: theme.primary,
@@ -349,11 +256,6 @@ class _SignupFormState extends State<SignupForm> {
                   const SizedBox(
                     height: 25,
                   ),
-                  const OrDivider(),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  const GoogleAuthButton()
                 ],
               ),
             ),

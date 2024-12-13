@@ -4,14 +4,15 @@ class User {
   final String phoneNumber;
   final num rating;
   final num coins;
+  final String role;
 
-  User({
-    required this.rating,
-    required this.coins,
-    required this.id,
-    required this.name,
-    required this.phoneNumber,
-  });
+  User(
+      {required this.rating,
+      required this.coins,
+      required this.id,
+      required this.name,
+      required this.phoneNumber,
+      required this.role});
 
   factory User.fromJson(Map<String, dynamic> jsonUser) {
     return User(
@@ -19,6 +20,7 @@ class User {
         name: jsonUser["name"],
         phoneNumber: jsonUser["phoneNumber"],
         rating: jsonUser["average_rating"],
+        role: jsonUser["role"],
         coins: jsonUser["coins"]);
   }
 }

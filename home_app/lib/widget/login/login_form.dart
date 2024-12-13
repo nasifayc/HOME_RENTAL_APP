@@ -5,8 +5,6 @@ import 'package:home_app/cubits/auth.dart';
 import 'package:home_app/screen/main_screens/landing_page.dart';
 import 'package:home_app/states/auth_state.dart';
 import 'package:home_app/widget/common/form_components.dart';
-import 'package:home_app/widget/common/google_auth_button.dart';
-import 'package:home_app/widget/common/or_divider.dart';
 import 'package:home_app/widget/common/primary_button.dart';
 
 class LoginForm extends StatefulWidget {
@@ -39,6 +37,7 @@ class _LoginFormState extends State<LoginForm> {
       builder: (context, state) {
         return Expanded(
           child: Container(
+            margin: const EdgeInsets.only(top: 20),
             decoration: BoxDecoration(
                 color: theme.primaryBackground,
                 borderRadius: const BorderRadius.only(
@@ -183,7 +182,7 @@ class _LoginFormState extends State<LoginForm> {
                                 style: theme.typography.bodyMediumWhite,
                               )),
                     const SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -210,12 +209,7 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                     const SizedBox(
                       height: 25,
-                    ),
-                    const OrDivider(),
-                    const SizedBox(
-                      height: 25,
-                    ),
-                    const GoogleAuthButton()
+                    )
                   ],
                 ),
               ),
