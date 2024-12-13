@@ -25,12 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final categories = [
     'All',
+    'Condominium',
     'Apartments',
+    'Office',
     'Villas',
-    'Studios',
-    'Townhouses',
     'Penthouses',
-    'Duplexes',
+    'Others'
   ];
 
   @override

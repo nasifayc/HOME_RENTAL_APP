@@ -73,76 +73,80 @@ class ShopCoin extends StatelessWidget {
                 subtitle: Text('${package['price']} ETB',
                     style: theme.typography.bodyMedium),
                 trailing: ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      final prefs = await SharedPreferences.getInstance();
-                      final refreshToken =
-                          prefs.getString("refreshToken") ?? '';
-                      String accessToken = prefs.getString("accessToken") ?? '';
-                      var response = await http.post(
-                        Uri.parse("$baserURL/api/v1/coins"),
-                        body: jsonEncode({"coins": package['coins']}),
-                        headers: {
-                          "Authorization": "Bearer $accessToken",
-                          "Content-Type": "application/json"
-                        },
-                      );
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const WebViewContainer()));
+                    // try {
+                    //   final prefs = await SharedPreferences.getInstance();
+                    //   final refreshToken =
+                    //       prefs.getString("refreshToken") ?? '';
+                    //   String accessToken = prefs.getString("accessToken") ?? '';
+                    //   var response = await http.post(
+                    //     Uri.parse("$baserURL/api/v1/coins"),
+                    //     body: jsonEncode({"coins": package['coins']}),
+                    //     headers: {
+                    //       "Authorization": "Bearer $accessToken",
+                    //       "Content-Type": "application/json"
+                    //     },
+                    //   );
 
-                      if (response.statusCode == 401 ||
-                          response.statusCode == 403) {
-                        final refreshResponse = await http.post(
-                          Uri.parse("$baserURL/auth/refresh-token"),
-                          body: jsonEncode({"token": refreshToken}),
-                          headers: {"Content-Type": "application/json"},
-                        );
+                    //   if (response.statusCode == 401 ||
+                    //       response.statusCode == 403) {
+                    //     final refreshResponse = await http.post(
+                    //       Uri.parse("$baserURL/auth/refresh-token"),
+                    //       body: jsonEncode({"token": refreshToken}),
+                    //       headers: {"Content-Type": "application/json"},
+                    //     );
 
-                        if (refreshResponse.statusCode == 201) {
-                          final data = jsonDecode(refreshResponse.body);
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString(
-                              "accessToken", data["access_token"]);
-                          await prefs.setString(
-                              "refreshToken", data["refresh_token"]);
-                          accessToken = prefs.getString("accessToken") ?? '';
+                    //     if (refreshResponse.statusCode == 201) {
+                    //       final data = jsonDecode(refreshResponse.body);
+                    //       final prefs = await SharedPreferences.getInstance();
+                    //       await prefs.setString(
+                    //           "accessToken", data["access_token"]);
+                    //       await prefs.setString(
+                    //           "refreshToken", data["refresh_token"]);
+                    //       accessToken = prefs.getString("accessToken") ?? '';
 
-                          // Retry fetching chats with new token
-                          response = await http.post(
-                            Uri.parse("$baserURL/api/v1/coins"),
-                            body: jsonEncode({"coins": package['coins']}),
-                            headers: {
-                              "Authorization": "Bearer $accessToken",
-                              "Content-Type": "application/json"
-                            },
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Unauthorized'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
+                    //       // Retry fetching chats with new token
+                    //       response = await http.post(
+                    //         Uri.parse("$baserURL/api/v1/coins"),
+                    //         body: jsonEncode({"coins": package['coins']}),
+                    //         headers: {
+                    //           "Authorization": "Bearer $accessToken",
+                    //           "Content-Type": "application/json"
+                    //         },
+                    //       );
+                    //     } else {
+                    //       ScaffoldMessenger.of(context).showSnackBar(
+                    //         const SnackBar(
+                    //           content: Text('Unauthorized'),
+                    //           backgroundColor: Colors.red,
+                    //         ),
+                    //       );
+                    //     }
+                    //   }
 
-                      if (response.statusCode == 200) {
-                        final url = jsonDecode(response.body);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    WebViewContainer(url: url)));
-                      }
+                    //   if (response.statusCode == 200) {
+                    //     final url = jsonDecode(response.body);
+                    //     Navigator.push(
+                    //         context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) =>
+                    //                 WebViewContainer(url: url)));
+                    //   }
 
-                      print(response.statusCode);
-                    } catch (e) {
-                      print(e);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Network Error'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
+                    //   print(response.statusCode);
+                    // } catch (e) {
+                    //   print(e);
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //     const SnackBar(
+                    //       content: Text('Network Error'),
+                    //       backgroundColor: Colors.red,
+                    //     ),
+                    //   );
+                    // }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.primary,
