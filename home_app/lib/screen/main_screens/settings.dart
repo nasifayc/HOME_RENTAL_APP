@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart';
 import 'package:home_app/cubits/user.dart';
 import 'package:home_app/model/user_model.dart';
@@ -90,6 +91,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
+    AppTheme theme = AppTheme.of(context);
 
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
@@ -108,9 +110,9 @@ class _SettingsPageState extends State<SettingsPage> {
         return Scaffold(
           appBar: AppBar(
             elevation: 1,
-            title: const Text(
+            title: Text(
               "Settings",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: theme.typography.titleMedium,
             ),
             centerTitle: true,
           ),
@@ -120,45 +122,29 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 10),
-                Text(
-                  'User Information',
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600),
-                ),
+                Text('User Information', style: theme.typography.bodyMedium),
                 const SizedBox(height: 8.0),
                 // Name (Unchangeable)
                 ListTile(
-                  leading: const Icon(Icons.person, color: Colors.grey),
-                  title: const Text(
+                  leading: Icon(Icons.person, color: theme.tertiary),
+                  title: Text(
                     'Name',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: theme.typography.titleSmall,
                   ),
-                  subtitle: Text(
-                    widget.user.name,
-                    style:
-                        TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
-                  ),
+                  subtitle:
+                      Text(widget.user.name, style: theme.typography.bodySmall),
                 ),
                 const Divider(),
                 // Phone Number (Unchangeable)
                 ListTile(
-                  leading: const Icon(Icons.phone, color: Colors.grey),
-                  title: const Text(
+                  leading: Icon(Icons.phone, color: theme.tertiary),
+                  title: Text(
                     'Phone Number',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: theme.typography.titleSmall,
                   ),
                   subtitle: Text(
                     widget.user.phoneNumber,
-                    style:
-                        TextStyle(fontSize: 14.0, color: Colors.grey.shade600),
+                    style: theme.typography.bodySmall,
                   ),
                 ),
                 const Divider(),
@@ -169,12 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     Text(
                       'Switch Profile',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey
-                            .shade800, // Slightly darker for better contrast
-                      ),
+                      style: theme.typography.bodyMedium,
                     ),
                     const SizedBox(height: 20.0),
 
@@ -186,12 +167,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: ListTile(
                         leading: const Icon(Icons.storefront,
                             color: Colors.blueAccent, size: 30.0),
-                        title: const Text(
+                        title: Text(
                           "Seller",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16.0,
-                          ),
+                          style: theme.typography.bodySmall,
                         ),
                         trailing: Checkbox(
                           value: role == "Seller",
@@ -224,12 +202,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: ListTile(
                         leading: const Icon(Icons.shopping_cart,
                             color: Colors.green, size: 30.0),
-                        title: const Text(
+                        title: Text(
                           "Buyer",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16.0,
-                          ),
+                          style: theme.typography.bodySmall,
                         ),
                         trailing: Checkbox(
                           value: role == "Buyer",
@@ -261,10 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 Text(
                   'Update Password',
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600),
+                  style: theme.typography.bodyMedium,
                 ),
                 const SizedBox(height: 16.0),
                 // Current Password
@@ -273,7 +245,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   obscureText: !isCurrentPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'Current Password',
-                    labelStyle: const TextStyle(fontSize: 16),
+                    labelStyle: theme.typography.titleSmall,
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
@@ -319,7 +291,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   obscureText: !isNewPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'New Password',
-                    labelStyle: const TextStyle(fontSize: 16),
+                    labelStyle: theme.typography.titleSmall,
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
@@ -392,7 +364,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: theme.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -410,13 +382,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'Update Password',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                              style: theme.typography.labelSmall,
                             ),
                     ),
                   ),
