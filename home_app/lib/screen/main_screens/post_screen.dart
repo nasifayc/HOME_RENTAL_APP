@@ -9,8 +9,10 @@ import 'package:home_app/states/house_state.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddHouseScreen extends StatefulWidget {
+  const AddHouseScreen({super.key});
+
   @override
-  _AddHouseScreenState createState() => _AddHouseScreenState();
+  State<AddHouseScreen> createState() => _AddHouseScreenState();
 }
 
 class _AddHouseScreenState extends State<AddHouseScreen> {
@@ -228,10 +230,13 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   ListTile(
                     title: Text(
                       "For Rent",
-                      style: theme.typography.titleMedium,
+                      style: theme.typography.headlineSmall,
                     ),
                     trailing: Switch(
-                      trackColor: const WidgetStatePropertyAll(Colors.black),
+                      activeColor: theme.primary,
+                      inactiveTrackColor: theme.tertiary,
+
+                      // trackColor: const WidgetStatePropertyAll(Colors.black),
                       thumbColor: const WidgetStatePropertyAll(Colors.white),
                       value: _forRent,
                       onChanged: (value) {
@@ -246,7 +251,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   // Image Picker
                   Text(
                     "Main Image",
-                    style: theme.typography.titleMedium,
+                    style: theme.typography.headlineSmall,
                   ),
                   GestureDetector(
                     onTap: _pickMainImage,
@@ -278,7 +283,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                         children: [
                           Text(
                             "Sub Images",
-                            style: theme.typography.titleMedium,
+                            style: theme.typography.headlineSmall,
                           ),
                           GestureDetector(
                             onTap: _pickSubImages,
@@ -340,7 +345,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: theme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -348,9 +353,9 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                           textStyle: const TextStyle(fontSize: 16),
                         ),
                         child: state is! HouseLoading
-                            ? const Text(
+                            ? Text(
                                 "Submit",
-                                style: TextStyle(color: Colors.white),
+                                style: theme.typography.labelSmall,
                               )
                             : const CircularProgressIndicator(),
                       );

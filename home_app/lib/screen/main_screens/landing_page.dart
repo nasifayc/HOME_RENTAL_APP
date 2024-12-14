@@ -100,19 +100,18 @@ class _LandingPageState extends State<LandingPage> {
                   actions: [
                     if (userState is UserLoaded)
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
                           children: [
-                            const Expanded(
-                              child: Icon(
-                                Icons.monetization_on_outlined,
-                                color: Colors.amber,
-                                size: 24,
-                              ),
+                            const Icon(
+                              Icons.monetization_on_outlined,
+                              color: Colors.amber,
+                              size: 24,
                             ),
-                            const SizedBox(height: 5),
-                            Expanded(
-                              child: Text(userState.user.coins.toString()),
+                            const SizedBox(width: 5),
+                            Text(
+                              userState.user.coins.toString(),
+                              style: appTheme.typography.headlineSmall,
                             ),
                           ],
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_app/core/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HelpAndSupport extends StatelessWidget {
@@ -30,12 +31,13 @@ class HelpAndSupport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppTheme theme = AppTheme.of(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
-        title: const Text(
+        title: Text(
           "Help & Support",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: theme.typography.bodyMedium,
         ),
         centerTitle: true,
       ),
@@ -48,10 +50,7 @@ class HelpAndSupport extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 "Tell us how we can be of help",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade600,
-                ),
+                style: theme.typography.bodyLarge,
               ),
             ),
             const SizedBox(height: 5),
@@ -59,14 +58,15 @@ class HelpAndSupport extends StatelessWidget {
               width: 240,
               child: Text(
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                maxLines: 10,
+                style: theme.typography.bodySmall,
                 "Our team of superheroes is ready and waiting to provide service and support",
               ),
             ),
             const SizedBox(height: 30),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white, // Background color
+                color: theme.primary, // Background color
                 borderRadius:
                     BorderRadius.circular(4), // Rounded corners (optional)
                 boxShadow: [
@@ -80,23 +80,23 @@ class HelpAndSupport extends StatelessWidget {
                 ],
               ),
               child: ListTile(
-                title: const Text(
+                title: Text(
                   "Phone",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black),
+                  style: theme.typography.labelSmall,
                 ),
-                subtitle: const Text("Give us a phone call",
-                    style: TextStyle(fontSize: 13, color: Colors.black)),
-                trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                subtitle: Text("Give us a phone call",
+                    style: theme.typography.labelSmall),
+                trailing: Icon(
+                  Icons.keyboard_arrow_right_outlined,
+                  color: theme.secondary,
+                ),
                 onTap: _launchPhoneDialer,
               ),
             ),
             const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.primary,
                 borderRadius:
                     BorderRadius.circular(4), // Rounded corners (optional)
                 boxShadow: [
@@ -109,18 +109,18 @@ class HelpAndSupport extends StatelessWidget {
                 ],
               ),
               child: ListTile(
-                title: const Text(
+                title: Text(
                   "Email",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black),
+                  style: theme.typography.labelSmall,
                 ),
-                subtitle: const Text(
+                subtitle: Text(
                   "Receive a solution directly to your inbox.",
-                  style: TextStyle(fontSize: 13, color: Colors.black),
+                  style: theme.typography.labelSmall,
                 ),
-                trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                trailing: Icon(
+                  Icons.keyboard_arrow_right_outlined,
+                  color: theme.secondary,
+                ),
                 onTap: _launchEmailClient,
               ),
             ),

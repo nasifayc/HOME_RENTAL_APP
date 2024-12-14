@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_app/core/theme/app_theme.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewContainer extends StatefulWidget {
@@ -32,9 +33,13 @@ class _WebViewContainerState extends State<WebViewContainer> {
 
   @override
   Widget build(BuildContext context) {
+    AppTheme theme = AppTheme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Coin Payment"),
+        title: Text(
+          "Coin Payment",
+          style: theme.typography.bodyMedium,
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -43,7 +48,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
             padding: const EdgeInsets.all(16.0),
             margin: const EdgeInsets.only(top: 30.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.secondary,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
@@ -62,49 +67,49 @@ class _WebViewContainerState extends State<WebViewContainer> {
                     height: 50,
                     child: Image.asset("assets/images/telebirr.png")),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'How to Pay with Tele Birr', // Title
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue),
+                  style: theme.typography.headlineSmall,
                 ),
                 const SizedBox(height: 20),
-                const Row(
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       radius: 15,
-                      backgroundColor: Colors.blue,
+                      backgroundColor: theme.primary,
                       child: Text(
                         '1',
+                        style: theme.typography.labelSmall,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: const Text(
+                      child: Text(
                         'Send the amount from options before to number 0969827560.',
-                        style: TextStyle(fontSize: 16, color: Colors.green),
+                        maxLines: 10,
+                        style: theme.typography.titleSmall
+                            .copyWith(color: Colors.green),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 17),
-                const Row(
+                const SizedBox(height: 17),
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       radius: 15,
-                      backgroundColor: Colors.blue,
-                      child: Text(
-                        '2',
-                      ),
+                      backgroundColor: theme.primary,
+                      child: Text('2', style: theme.typography.labelSmall),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: const Text(
+                      child: Text(
                         'Call or send a message to confirm your payment to 0969827560.',
-                        style: TextStyle(fontSize: 16, color: Colors.green),
+                        maxLines: 10,
+                        style: theme.typography.titleSmall
+                            .copyWith(color: Colors.green),
                       ),
                     ),
                   ],
