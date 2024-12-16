@@ -57,7 +57,9 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
     AppTheme theme = AppTheme.of(context);
     final _ = BlocProvider.of<HouseCubit>(context);
     final categories = [
+      'Condominiem',
       'Apartments',
+      'Office',
       'Villas',
       'Studios',
       'Townhouses',

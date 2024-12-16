@@ -56,7 +56,7 @@ class AuthRepository implements IAuthRepository {
       }
     } catch (e) {
       print(e);
-      return Left(AuthError("", "", "", "Server Error", ''));
+      return Left(AuthError("", "", "", "Network Error", ''));
     }
   }
 
@@ -99,7 +99,7 @@ class AuthRepository implements IAuthRepository {
       }
     } catch (e) {
       print(e);
-      return Left(AuthError("", "", "", "Server Error", ''));
+      return Left(AuthError("", "", "", "Network Error", ''));
     }
   }
 
@@ -172,7 +172,7 @@ class AuthRepository implements IAuthRepository {
       }
     } catch (e) {
       print(e);
-      return Left(AuthError("", "", "", "Server Error", ''));
+      return Left(AuthError("", "", "", "Network Error", ''));
     }
   }
 

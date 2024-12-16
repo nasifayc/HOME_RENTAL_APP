@@ -175,7 +175,7 @@ class ChatRepository implements IChatRepository {
       return Right(ChatError('error fetching messages'));
     } catch (e) {
       print(e);
-      return Right(ChatError('error fetching messages'));
+      return Right(ChatError('Network Error'));
     }
   }
 
@@ -234,7 +234,7 @@ class ChatRepository implements IChatRepository {
 
       return Right(ChatError('error adding messages'));
     } catch (e) {
-      return Right(ChatError('error adding messages'));
+      return Right(ChatError('Network Error'));
     }
   }
 
@@ -295,7 +295,7 @@ class ChatRepository implements IChatRepository {
       return Right(ChatError('error updating messages'));
     } catch (e) {
       print(e);
-      return Right(ChatError('error updating messages'));
+      return Right(ChatError('Network Error'));
     }
   }
 
@@ -345,7 +345,7 @@ class ChatRepository implements IChatRepository {
 
       return Right(ChatError('error fetching messages'));
     } catch (e) {
-      return Right(ChatError('error fetching messages'));
+      return Right(ChatError('Network Error'));
     }
   }
 
@@ -394,7 +394,7 @@ class ChatRepository implements IChatRepository {
 
       return Right(ChatError('error deleting chat'));
     } catch (e) {
-      return Right(ChatError('error deleting chat'));
+      return Right(ChatError('Network Error'));
     }
   }
 }

@@ -57,7 +57,7 @@ class UserRepository implements IUserRepository {
         return Left(UserError('failed to load profile'));
       }
     } catch (e) {
-      return Left(UserError('server error'));
+      return Left(UserError('Network error'));
     }
   }
 
@@ -109,7 +109,7 @@ class UserRepository implements IUserRepository {
         return Left(UserError('failed to load profile'));
       }
     } catch (e) {
-      return Left(UserError('server error'));
+      return Left(UserError('Network error'));
     }
   }
 

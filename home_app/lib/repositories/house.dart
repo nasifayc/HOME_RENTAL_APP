@@ -58,7 +58,7 @@ class HouseRepository implements IHouseRepository {
       }
     } catch (e) {
       print(e);
-      return Right(HouseError('failed to fetch products'));
+      return Right(HouseError('Network Error'));
     }
   }
 
@@ -147,7 +147,7 @@ class HouseRepository implements IHouseRepository {
       }
     } catch (e) {
       print(e);
-      return Right(HouseError('error occured'));
+      return Right(HouseError('Network Error'));
     }
   }
 }
