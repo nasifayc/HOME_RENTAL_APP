@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
 import 'package:home_app/screen/main_screens/chat_detail_screen.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class HouseDetailScreen extends StatefulWidget {
   final HouseModel house;
@@ -49,6 +53,45 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     });
   }
 
+  Future<void> shareHouse() async {
+    try {
+      // Download the main image
+      final imageUrl = widget.house.mainImage; // use this later
+      final response = await http.get(Uri.parse(
+          'https://postandporch.com/cdn/shop/articles/AdobeStock_209124760.jpg?v=1662575433&width=1440'));
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = '${directory.path}/house_main_image.jpg';
+      final imageFile = File(imagePath);
+      await imageFile.writeAsBytes(response.bodyBytes);
+
+      // Convert the file path to XFile
+      final xFile = XFile(imageFile.path);
+
+      // Prepare share text
+      final shareText = '''
+🏠 **Check out this house for ${widget.house.forRent ? "Rent" : "Sale"}!**
+
+• **Title**: ${widget.house.title}
+• **Location**: ${widget.house.location}
+• **Price**: \$${widget.house.price}
+• **Description**: ${widget.house.description}
+
+📲 View more details in our app (ዋሻ) and contact the owner now!
+''';
+
+      // Share image and text
+      Share.shareXFiles(
+        [xFile],
+        text: shareText,
+      );
+    } catch (e) {
+      print("Error sharing house: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to share house details.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AppTheme appTheme = AppTheme.of(context);
@@ -62,6 +105,18 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
         ),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: shareHouse,
+              child: Icon(
+                Icons.share_outlined,
+                color: appTheme.primary,
+              ),
+            ),
+          )
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
