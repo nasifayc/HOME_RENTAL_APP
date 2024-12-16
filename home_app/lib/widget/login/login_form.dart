@@ -6,6 +6,7 @@ import 'package:home_app/screen/main_screens/landing_page.dart';
 import 'package:home_app/states/auth_state.dart';
 import 'package:home_app/widget/common/form_components.dart';
 import 'package:home_app/widget/common/primary_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -20,17 +21,35 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _loadSavedPhoneNumber();
+  }
+
+  Future<void> _loadSavedPhoneNumber() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedPhoneNumber = prefs.getString("phone");
+
+    if (savedPhoneNumber != null && savedPhoneNumber.isNotEmpty) {
+      setState(() {
+        _phoneController.text = savedPhoneNumber;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
     AppTheme theme = AppTheme.of(context);
     FormComponents formComponents = FormComponents(context: context);
+
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => LandingPage(),
+                builder: (context) => const LandingPage(),
               ));
         }
       },
@@ -74,7 +93,6 @@ class _LoginFormState extends State<LoginForm> {
                         if (value == null || value.isEmpty) {
                           return 'Phone Number is required!';
                         }
-
                         return null;
                       },
                     ),
@@ -114,7 +132,6 @@ class _LoginFormState extends State<LoginForm> {
                         if (value == null || value.isEmpty) {
                           return 'password is required!';
                         }
-
                         return null;
                       },
                     ),

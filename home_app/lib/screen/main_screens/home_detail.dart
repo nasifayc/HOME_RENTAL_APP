@@ -64,16 +64,14 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
       final imageFile = File(imagePath);
       await imageFile.writeAsBytes(response.bodyBytes);
 
-      // Convert the file path to XFile
       final xFile = XFile(imageFile.path);
 
-      // Prepare share text
       final shareText = '''
 🏠 **Check out this house for ${widget.house.forRent ? "Rent" : "Sale"}!**
 
 • **Title**: ${widget.house.title}
 • **Location**: ${widget.house.location}
-• **Price**: \$${widget.house.price}
+• **Price**: ${widget.house.price} ETB
 • **Description**: ${widget.house.description}
 
 📲 View more details in our app (ዋሻ) and contact the owner now!

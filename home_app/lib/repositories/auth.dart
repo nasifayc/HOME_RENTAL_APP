@@ -31,6 +31,7 @@ class AuthRepository implements IAuthRepository {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("accessToken", data["access_token"]);
         await prefs.setString("refreshToken", data["refresh_token"]);
+        await prefs.setString("phone", phoneNumber);
         AuthToken authToken = AuthToken.fromJson(data);
         return Right(authToken);
       } else if (response.statusCode == 409) {
@@ -79,6 +80,7 @@ class AuthRepository implements IAuthRepository {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("accessToken", data["access_token"]);
         await prefs.setString("refreshToken", data["refresh_token"]);
+        await prefs.setString("phone", phoneNumber);
         AuthToken authToken = AuthToken.fromJson(data);
         return Right(authToken);
       } else if (response.statusCode == 401) {
