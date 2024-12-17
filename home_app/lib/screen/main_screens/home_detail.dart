@@ -57,8 +57,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
     try {
       // Download the main image
       final imageUrl = widget.house.mainImage; // use this later
-      final response = await http.get(Uri.parse(
-          'https://postandporch.com/cdn/shop/articles/AdobeStock_209124760.jpg?v=1662575433&width=1440'));
+      final response = await http.get(Uri.parse(imageUrl));
       final directory = await getApplicationDocumentsDirectory();
       final imagePath = '${directory.path}/house_main_image.jpg';
       final imageFile = File(imagePath);

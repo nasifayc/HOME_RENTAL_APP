@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_app/core/bottom_nav_cubit/bottom_nav_cubit.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/auth.dart'; // Assuming this is the location of your AuthCubit
+import 'package:home_app/cubits/house.dart';
 import 'package:home_app/cubits/user.dart';
 import 'package:home_app/screen/layout/shop_coin.dart';
 import 'package:home_app/screen/main_screens/chat_screen.dart';
@@ -26,6 +29,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   void initState() {
     BlocProvider.of<UserCubit>(context).getProfile();
+
     super.initState();
   }
 
@@ -98,6 +102,17 @@ class _LandingPageState extends State<LandingPage> {
                   ),
                   centerTitle: true,
                   actions: [
+                    GestureDetector(
+                      onTap: () {
+                        log("Refresh Clicked");
+                        BlocProvider.of<HouseCubit>(context).fetchHouses();
+                        BlocProvider.of<UserCubit>(context).getProfile();
+                      },
+                      child: Icon(
+                        Icons.refresh,
+                        color: appTheme.primary,
+                      ),
+                    ),
                     if (userState is UserLoaded)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
