@@ -84,13 +84,12 @@ class HelpAndSupport extends StatelessWidget {
                   "Phone",
                   style: theme.typography.labelSmall,
                 ),
-                subtitle: Text("Give us a phone call",
-                    style: theme.typography.labelSmall),
+                subtitle:
+                    Text("0900624702", style: theme.typography.labelSmall),
                 trailing: Icon(
                   Icons.keyboard_arrow_right_outlined,
                   color: theme.secondary,
                 ),
-                onTap: _launchPhoneDialer,
               ),
             ),
             const SizedBox(height: 20),
@@ -114,14 +113,13 @@ class HelpAndSupport extends StatelessWidget {
                   style: theme.typography.labelSmall,
                 ),
                 subtitle: Text(
-                  "Receive a solution directly to your inbox.",
+                  "ephremmamo555@gmail.com",
                   style: theme.typography.labelSmall,
                 ),
                 trailing: Icon(
                   Icons.keyboard_arrow_right_outlined,
                   color: theme.secondary,
                 ),
-                onTap: _launchEmailClient,
               ),
             ),
           ],

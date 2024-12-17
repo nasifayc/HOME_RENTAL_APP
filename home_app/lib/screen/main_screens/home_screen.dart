@@ -112,21 +112,25 @@ class SearchBar extends StatelessWidget {
         context.findAncestorStateOfType<_HomeScreenState>()?.setState(() {})
       },
       decoration: InputDecoration(
-        labelStyle: const TextStyle(color: Color.fromARGB(255, 115, 113, 113)),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
-        ),
-        hintText: "Search",
-        hintStyle: TextStyle(color: Colors.grey.shade700),
-        prefixIcon: Icon(Icons.search, color: Colors.grey.shade700),
-        filled: true,
-        fillColor: const Color.fromARGB(255, 241, 241, 241),
-      ),
+          labelStyle:
+              const TextStyle(color: Color.fromARGB(255, 115, 113, 113)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
+          hintText: "Search",
+          hintStyle: TextStyle(color: Colors.grey.shade700),
+          prefixIcon: Icon(Icons.search, color: Colors.grey.shade700),
+          filled: true,
+          fillColor: const Color.fromARGB(255, 241, 241, 241),
+          contentPadding: EdgeInsets.all(0),
+          isDense: true),
+      cursorColor: Colors.grey.shade700,
+      style: TextStyle(color: Colors.grey.shade700),
     );
   }
 }

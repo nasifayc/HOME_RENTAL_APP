@@ -31,7 +31,7 @@ class PopularSection extends StatelessWidget {
             ),
             Text(
               "No Result",
-              style: TextStyle(fontSize: 20, color: Colors.black),
+              style: TextStyle(fontSize: 20),
             )
           ],
         ),

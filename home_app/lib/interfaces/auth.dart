@@ -11,5 +11,6 @@ abstract class IAuthRepository {
   Future<Either<AuthError?, String?>> changePassword(
       String oldPassword, String newPassword);
   Future<Either<AuthError?, AuthToken?>> checkToken();
-  Future<Either<UserError?, String?>> changeStatus();
+  Future<Either<UserError?, String?>> becomeSeller();
+  Future<Either<UserError?, String?>> becomeBuyer();
 }

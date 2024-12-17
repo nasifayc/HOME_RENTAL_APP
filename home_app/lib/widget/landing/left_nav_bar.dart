@@ -171,13 +171,7 @@ class _LeftNavBarState extends State<LeftNavBar> {
                   style: theme.typography.bodySmall,
                 ),
                 onTap: () {
-                  authCubit.logout();
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => const LoginPage(),
-                    ),
-                    (route) => false,
-                  );
+                  showLogoutConfirmation(context, authCubit);
                 },
               ),
             ],
@@ -185,5 +179,48 @@ class _LeftNavBarState extends State<LeftNavBar> {
         );
       },
     );
+  }
+}
+
+Future<void> showLogoutConfirmation(
+    BuildContext context, AuthCubit authCubit) async {
+  final shouldLogout = await showDialog<bool>(
+    context: context,
+    barrierDismissible: false, // User must choose an option
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Logout Confirmation'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: <Widget>[
+          TextButton(
+            style: TextButton.styleFrom(backgroundColor: Colors.blue),
+            onPressed: () {
+              Navigator.of(context).pop(false); // User cancels logout
+            },
+            child: const Text(
+              'Cancel',
+            ),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.of(context).pop(true); // User confirms logout
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (shouldLogout == true) {
+    authCubit.logout();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+      (route) => false,
+    );
+    ; // Proceed to logout if confirmed
   }
 }

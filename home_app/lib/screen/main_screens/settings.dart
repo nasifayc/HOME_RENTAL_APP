@@ -37,18 +37,28 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
   }
 
-  Future changeStatus() async {
+  Future changeStatus(bool toSeller) async {
     final prefs = await SharedPreferences.getInstance();
     final refreshToken = prefs.getString("refreshToken") ?? '';
     var accessToken = prefs.getString("accessToken") ?? '';
 
     try {
-      var response = await http.patch(
-        Uri.parse('$baserURL/api/v1/auth/change-status'),
-        headers: {
-          "Authorization": "Bearer $accessToken",
-        },
-      );
+      var response;
+      if (toSeller) {
+        response = await http.patch(
+          Uri.parse('$baserURL/api/v1/auth/become-seller'),
+          headers: {
+            "Authorization": "Bearer $accessToken",
+          },
+        );
+      } else {
+        response = await http.patch(
+          Uri.parse('$baserURL/api/v1/auth/become-buyer'),
+          headers: {
+            "Authorization": "Bearer $accessToken",
+          },
+        );
+      }
 
       if (response.statusCode == 401 || response.statusCode == 403) {
         final refreshResponse = await http.post(
@@ -174,7 +184,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         trailing: Checkbox(
                           value: role == "Seller",
                           onChanged: (val) async {
-                            final result = await changeStatus();
+                            final result = await changeStatus(true);
 
                             if (result['error'] == '') {
                               setState(() {
@@ -209,15 +219,15 @@ class _SettingsPageState extends State<SettingsPage> {
                         trailing: Checkbox(
                           value: role == "Buyer",
                           onChanged: (val) async {
-                            final result = await changeStatus();
+                            final result = await changeStatus(false);
 
                             if (result['error'] == '') {
                               setState(() {
                                 role =
-                                    "Buyer"; // Update the checkbox state if successful
+                                    "Buyer"; 
                               });
                             } else {
-                              // Optionally show an error message (e.g., using a SnackBar)
+                              
                               print('Error: ${result["error"]}');
                             }
                           },
