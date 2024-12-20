@@ -193,12 +193,13 @@ Future<void> showLogoutConfirmation(
         content: const Text('Are you sure you want to log out?'),
         actions: <Widget>[
           TextButton(
-            style: TextButton.styleFrom(backgroundColor: Colors.blue),
+            style: TextButton.styleFrom(backgroundColor: Colors.white),
             onPressed: () {
               Navigator.of(context).pop(false); // User cancels logout
             },
             child: const Text(
               'Cancel',
+              style: TextStyle(color: Colors.black)
             ),
           ),
           TextButton(
@@ -206,7 +207,7 @@ Future<void> showLogoutConfirmation(
             onPressed: () {
               Navigator.of(context).pop(true); // User confirms logout
             },
-            child: const Text('Logout'),
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
           ),
         ],
       );

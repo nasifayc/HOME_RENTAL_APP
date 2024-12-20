@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class HouseDetailScreen extends StatefulWidget {
   final HouseModel house;
@@ -146,7 +147,7 @@ class _HouseDetailScreenState extends State<HouseDetailScreen> {
                   child: Row(
                     children: [
                       Text(
-                        '${widget.house.price} Birr',
+                        '${NumberFormat("#,##0.00", "en_US").format(widget.house.price)} ETB',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,

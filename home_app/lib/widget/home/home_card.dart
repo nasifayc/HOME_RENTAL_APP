@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/model/house_model.dart';
 import 'package:home_app/screen/main_screens/home_detail.dart';
+import 'package:intl/intl.dart';
 
 class HomeCard extends StatelessWidget {
   final HouseModel house;
@@ -61,7 +62,9 @@ class HomeCard extends StatelessWidget {
                     maxLines: 2,
                   ),
                   const SizedBox(height: 8),
-                  Text('${house.price} ETB', style: theme.typography.bodySmall),
+                  Text(
+                      '${NumberFormat("#,##0.00", "en_US").format(house.price)} ETB',
+                      style: theme.typography.bodySmall),
                   const SizedBox(height: 8),
                   Row(
                     children: [

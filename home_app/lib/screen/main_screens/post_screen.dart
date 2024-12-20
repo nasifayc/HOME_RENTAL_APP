@@ -231,7 +231,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                   // For Rent Toggle
                   ListTile(
                     title: Text(
-                      "For Rent",
+                      "For Sell",
                       style: theme.typography.headlineSmall,
                     ),
                     trailing: Switch(
@@ -330,7 +330,6 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                         builder: (context, state) {
                       return ElevatedButton(
                         onPressed: () {
-                          print("submitted");
                           if (_formKey.currentState!.validate()) {
                             houseCubit.addHouse(
                                 _titleController.text,
@@ -341,7 +340,7 @@ class _AddHouseScreenState extends State<AddHouseScreen> {
                                 _bedrooms,
                                 _bathrooms,
                                 _floors,
-                                _forRent,
+                                !_forRent,
                                 _mainImage!,
                                 _subImages.map((image) => image).toList());
                           }

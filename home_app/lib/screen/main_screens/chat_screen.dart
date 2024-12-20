@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/chat.dart';
 import 'package:home_app/model/chat_model.dart';
 import 'package:home_app/screen/layout/sign_up_page.dart';
@@ -66,6 +67,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final chatCubit = BlocProvider.of<ChatCubit>(context);
+    AppTheme theme = AppTheme.of(context);
+
     return Container(
       child: BlocBuilder<ChatCubit, ChatState>(builder: (context, state) {
         if (state is ChatLoaded) {
@@ -73,18 +76,18 @@ class _ChatScreenState extends State<ChatScreen> {
             ..sort((a, b) => b.lastUpdatedTime.compareTo(a.lastUpdatedTime));
 
           if (chats.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.cloud_off,
                     size: 100,
                   ),
                   Text(
                     "No Chats",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
+                    style: TextStyle(fontSize: 20, color: theme.primaryText),
                   )
                 ],
               ),
