@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 10),
                       PopularSectionList(houses: searchList),
                       const SizedBox(height: 25),
-                      SectionTitle(title: 'For Sell', theme: theme),
+                      SectionTitle(title: 'For Rent', theme: theme),
                       const SizedBox(height: 10),
                       PopularSectionList(
                         houses: searchList
