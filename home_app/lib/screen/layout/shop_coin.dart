@@ -14,16 +14,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ShopCoin extends StatelessWidget {
   const ShopCoin({super.key});
 
+//   Sorry for the late reply.
+// 7=14 coins
+// 20=50 coins
+// 50=150 coins
+// 200=weekly unlimited (may be 500 coins )
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> coinPackages = [
-      {'coins': 1, 'price': 1},
-      {'coins': 10, 'price': 7},
-      {'coins': 50, 'price': 30},
-      {'coins': 100, 'price': 70},
-      {'coins': 500, 'price': 300},
-      {'coins': 1000, 'price': 800},
-      {'coins': 10000, 'price': 5000},
+      {'coins': 14, 'price': 7},
+      {'coins': 50, 'price': 20},
+      {'coins': 150, 'price': 50},
+      {'coins': 500, 'price': 200},
     ];
 
     AppTheme theme = AppTheme.of(context);
