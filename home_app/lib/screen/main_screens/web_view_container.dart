@@ -3,7 +3,8 @@ import 'package:home_app/core/theme/app_theme.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewContainer extends StatefulWidget {
-  const WebViewContainer({super.key});
+  final String amount;
+  const WebViewContainer({super.key, required this.amount});
 
   @override
   State<WebViewContainer> createState() => _WebViewContainerState();
@@ -86,7 +87,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Send the amount from options before to number 0969827560.',
+                        'Send ${widget.amount} ETB to this number 0964604314.',
                         maxLines: 10,
                         style: theme.typography.titleSmall
                             .copyWith(color: Colors.green),
@@ -106,7 +107,7 @@ class _WebViewContainerState extends State<WebViewContainer> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Call or send a message to confirm your payment to 0969827560.',
+                        'Call or send a message to confirm your payment to 0964604314.',
                         maxLines: 10,
                         style: theme.typography.titleSmall
                             .copyWith(color: Colors.green),

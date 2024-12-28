@@ -142,17 +142,17 @@ class AboutUsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          "📧 Email: contact@yourapp.com",
+                          "📧 Email: netpulse@gmail.com",
                           style: theme.typography.bodyMedium,
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "📞 Phone: +1 234 567 890",
+                          "📞 Phone: +251-96-157-6532",
                           style: theme.typography.bodyMedium,
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          "📍 Address: 123 Dream Street, Hometown, Country",
+                          "📍 Address: Addis Ababa, Ethiopia",
                           maxLines: 10,
                           style: theme.typography.bodyMedium,
                         ),

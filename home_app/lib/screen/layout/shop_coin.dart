@@ -1,24 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:home_app/core/theme/app_theme.dart';
 import 'package:home_app/cubits/chat.dart';
 import 'package:home_app/cubits/house.dart';
 import 'package:home_app/cubits/user.dart';
 import 'package:home_app/screen/main_screens/web_view_container.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:home_app/core/api_url.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ShopCoin extends StatelessWidget {
   const ShopCoin({super.key});
 
-//   Sorry for the late reply.
-// 7=14 coins
-// 20=50 coins
-// 50=150 coins
-// 200=weekly unlimited (may be 500 coins )
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> coinPackages = [
@@ -79,7 +69,9 @@ class ShopCoin extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const WebViewContainer()));
+                            builder: (context) => WebViewContainer(
+                                  amount: package['price'].toString(),
+                                )));
                     // try {
                     //   final prefs = await SharedPreferences.getInstance();
                     //   final refreshToken =

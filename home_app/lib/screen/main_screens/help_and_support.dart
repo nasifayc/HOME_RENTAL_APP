@@ -84,8 +84,8 @@ class HelpAndSupport extends StatelessWidget {
                   "Phone",
                   style: theme.typography.labelSmall,
                 ),
-                subtitle:
-                    Text("0900624702", style: theme.typography.labelSmall),
+                subtitle: Text("+251-96-157-6532",
+                    style: theme.typography.labelSmall),
                 trailing: Icon(
                   Icons.keyboard_arrow_right_outlined,
                   color: theme.secondary,
@@ -113,7 +113,7 @@ class HelpAndSupport extends StatelessWidget {
                   style: theme.typography.labelSmall,
                 ),
                 subtitle: Text(
-                  "ephremmamo555@gmail.com",
+                  "netpulse@gmail.com",
                   style: theme.typography.labelSmall,
                 ),
                 trailing: Icon(

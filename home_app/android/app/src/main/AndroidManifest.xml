@@ -1,7 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.abdurentalservice.home_app">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="ዋሻ"
+        android:label="Washa"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         android:networkSecurityConfig="@xml/network_security_config"

@@ -42,6 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
           List<HouseModel> filteredProducts = state.houses;
           if (selectedChipIndex != 0) {
             filteredProducts = state.houses.where((product) {
+              if (selectedChipIndex == 1) {
+                return product.category == 'Condominiem';
+              }
               return product.category == categories[selectedChipIndex!];
             }).toList();
           }
@@ -82,9 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       SectionTitle(title: 'For Rent', theme: theme),
                       const SizedBox(height: 10),
                       PopularSectionList(
-                        houses: searchList
-                            .where((house) => !house.forRent)
-                            .toList(),
+                        houses:
+                            searchList.where((house) => house.forRent).toList(),
                       ),
                     ],
                   ),
@@ -109,6 +111,7 @@ class SearchBar extends StatelessWidget {
     return TextField(
       controller: controller,
       onChanged: (value) => {
+        // ignore: invalid_use_of_protected_member
         context.findAncestorStateOfType<_HomeScreenState>()?.setState(() {})
       },
       decoration: InputDecoration(

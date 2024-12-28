@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:home_app/interfaces/house.dart';
@@ -51,6 +52,7 @@ class HouseRepository implements IHouseRepository {
 
       if (response.statusCode == 200) {
         List<dynamic> houseJson = jsonDecode(response.body);
+        log(houseJson.toString());
         return Left(
             houseJson.map((json) => HouseModel.fromJson(json)).toList());
       } else {
